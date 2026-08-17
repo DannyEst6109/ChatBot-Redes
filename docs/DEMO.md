@@ -57,6 +57,17 @@ Do not run this scenario with confidential paths.
 - Missing parameters are reported instead of guessed.
 - A stockout before lead time triggers a contingency warning.
 
+## Interface explanation
+
+- Colour is defined by meaning, not by hue, and never carries information alone.
+- The header, the dialogue, and the protocol log occupy three distinct levels of
+  visual hierarchy.
+- `/verbose` shows the complete JSON-RPC envelopes; the compact view exists to
+  keep the conversation readable, not to hide traffic.
+- `NO_COLOR=1 npm run chatbot` demonstrates the plain-text fallback.
+- Redirecting the output to a file shows the same session without escape
+  sequences, which is how the transcript for the report is captured.
+
 ## Technical explanation
 
 - JSON-RPC 2.0 messages are newline-delimited UTF-8 over stdio.

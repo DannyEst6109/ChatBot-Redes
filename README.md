@@ -69,8 +69,10 @@ Useful commands inside the chatbot:
 
 ```text
 /help      Show available commands
-/servers   Show connected MCP servers
-/tools     Show discovered MCP tools
+/servers   Show connected MCP servers and their transport
+/tools     Show discovered MCP tools, grouped by server
+/verbose   Toggle between one-line and full JSON-RPC envelopes
+/plain     Toggle colour off and on
 /log       Show the current audit log location
 /clear     Clear the conversation context
 /exit      Close all MCP servers and exit
@@ -78,6 +80,44 @@ Useful commands inside the chatbot:
 
 Every MCP request and response is shown in the terminal and appended to
 `logs/mcp-interactions.jsonl`.
+
+## Terminal interface
+
+The chatbot renders a terminal user interface with no additional dependencies:
+colour is emitted as ANSI escape sequences written by `src/ui/`. The design
+decisions below are deliberate rather than decorative.
+
+**Colour carries meaning.** The palette is defined by semantic name, never by
+hue: `SIN_STOCK` is red, `CRITICO` amber, `DSI_IDEAL` green, following the
+traffic-light convention a reader already knows. Colour is never the only
+signal — every status prints its label as well, so the information survives
+colour blindness and redirected output.
+
+**Three levels of hierarchy.** A fixed header holds the persistent context
+(model, connected servers, tool count). The dialogue is the primary reading
+surface at full width and high contrast. MCP traffic is subordinate: indented
+and dimmed, present but never competing with the conversation it explains.
+
+**One line per protocol message.** Raw envelopes run to thousands of characters
+per call and bury the answer. The default view states what happened and how long
+it took; `/verbose` restores the complete envelopes. The JSONL file always
+records the full envelope, so no evidence is lost in either mode.
+
+**Immediate feedback.** An activity indicator appears as soon as a question is
+sent and names the tool currently running, so a multi-second wait reads as
+progress instead of a frozen terminal.
+
+**Structured results are tabulated.** Tool results carry `structuredContent`,
+which the interface renders as an aligned table rather than leaving the model to
+describe the records in prose.
+
+**It degrades cleanly.** With `NO_COLOR` set, on a terminal that declares itself
+incapable, or when output is redirected to a file, no escape sequence is
+emitted, the activity indicator collapses to a single line, and the transcript
+prints each question so a captured session still reads correctly.
+
+Widths adapt to the terminal and are measured in visible characters, so accented
+text such as `Decoración estacional` stays aligned.
 
 ## Run without an API key
 

@@ -19,6 +19,7 @@ to the first milestone.
 | Gradual version control | Repository is ready; commit cadence remains the student's responsibility | Student action required |
 | Private repository with staff access | Hosting permission is outside the application | Student action required |
 | Partial presentation/demo | `npm run demo` and `docs/DEMO.md` | Ready |
+| Optional user interface (extra credit) | Terminal interface in `src/ui/`, documented in `README.md` | Implemented |
 
 ## Deliberately excluded
 

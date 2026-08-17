@@ -108,13 +108,18 @@ export class ProtocolFormatter {
 /** Describes a result by shape rather than dumping it. */
 function summarize(result: unknown): string {
   if (!isRecord(result)) return 'ok'
-  if (Array.isArray(result.tools)) return `${result.tools.length} herramientas`
+  if (Array.isArray(result.tools)) return count(result.tools.length, 'herramienta', 'herramientas')
   if (isRecord(result.structuredContent)) {
     const rows = Object.values(result.structuredContent).find(Array.isArray)
-    if (Array.isArray(rows)) return `${rows.length} registros`
+    if (Array.isArray(rows)) return count(rows.length, 'registro', 'registros')
   }
   if (result.isError === true) return 'error de herramienta'
   if (Array.isArray(result.content)) return 'ok'
   if (isRecord(result.serverInfo)) return String(result.serverInfo.name ?? 'ok')
   return 'ok'
+}
+
+/** Agrees the noun with the number, since these lines are read constantly. */
+export function count(total: number, singular: string, plural: string): string {
+  return `${total} ${total === 1 ? singular : plural}`
 }

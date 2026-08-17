@@ -31,7 +31,12 @@ export class AnthropicGateway implements LlmGateway {
         system:
           'You are a supply planning assistant. Use MCP tools for operational facts. ' +
           'Never invent inventory values or purchase quantities. State that all data is synthetic. ' +
-          'Answer in the language used by the user and keep recommendations auditable.',
+          'Answer in the language used by the user and keep recommendations auditable. ' +
+          // The terminal renders the tool payload as an aligned table itself, so
+          // repeating it as markdown wastes width and wraps badly.
+          'You are read in a terminal: never use markdown tables, headings, or bold. ' +
+          'The interface already displays the records returned by each tool, so do not repeat them. ' +
+          'Interpret them instead: what is urgent, why, and what to do next, in a few short sentences.',
         messages,
         tools,
         tool_choice: { type: 'auto' },

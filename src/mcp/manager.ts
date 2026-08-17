@@ -1,7 +1,7 @@
 import type { AuditLogger } from '../logging/audit-logger.js'
 import { isRecord, type JsonObject } from '../shared/json.js'
 import { McpClient } from './client.js'
-import type { McpConfigFile, McpTool } from './protocol.js'
+import type { McpCallToolResult, McpConfigFile, McpTool } from './protocol.js'
 import { StdioTransport } from './stdio-transport.js'
 
 export interface QualifiedTool {
@@ -12,6 +12,13 @@ export interface QualifiedTool {
   originalName: string
 }
 
+/** Notified of every tool result, so a presentation layer can render it. */
+export type ToolResultObserver = (event: {
+  server: string
+  tool: string
+  result: McpCallToolResult
+}) => void
+
 export class McpManager {
   private readonly clients = new Map<string, McpClient>()
   private readonly toolIndex = new Map<string, QualifiedTool>()
@@ -20,6 +27,7 @@ export class McpManager {
   constructor(
     private readonly config: McpConfigFile,
     private readonly logger: AuditLogger,
+    private readonly observer?: ToolResultObserver,
   ) {}
 
   async connectAll(): Promise<void> {
@@ -67,6 +75,7 @@ export class McpManager {
     const client = this.clients.get(tool.serverName)
     if (!client) throw new Error(`MCP server ${tool.serverName} is not connected.`)
     const result = await client.callTool(tool.originalName, input as JsonObject)
+    this.observer?.({ server: tool.serverName, tool: tool.originalName, result })
     const text = result.content.filter((block) => block.type === 'text').map((block) => block.text).join('\n')
     if (result.isError) throw new Error(text || `MCP tool ${qualifiedName} failed.`)
     return text || JSON.stringify(result.structuredContent ?? {})
