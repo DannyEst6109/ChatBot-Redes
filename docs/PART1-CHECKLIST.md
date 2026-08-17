@@ -8,8 +8,8 @@ to the first milestone.
 | Connect to an LLM through its API | Native HTTPS implementation in `AnthropicGateway` | Implemented; API key required at runtime |
 | Preserve context in one session | `ChatSession` retains user, assistant, tool-use, and tool-result messages | Implemented and tested |
 | Show and retain every MCP interaction | Terminal output plus `logs/mcp-interactions.jsonl` | Implemented and demonstrated |
-| Use official Filesystem MCP server | Configurable official npm command plus `npm run demo:filesystem` | Integrated and verified; disabled by default |
-| Use official Git MCP server | Compatible official `mcp-server-git` command plus `npm run demo:git` | Integrated and verified; disabled by default |
+| Use official Filesystem MCP server | Official npm command plus `npm run demo:filesystem` | Integrated, verified, and enabled by default |
+| Use official Git MCP server | Compatible official `mcp-server-git` command plus `npm run demo:git` | Integrated, verified, and enabled by default |
 | Create an industrial local MCP server | Synthetic food-supply planning server | Implemented |
 | Chatbot uses the local server | Generic process client performs initialize, discovery, and calls | Implemented and tested |
 | Implement MCP manually | JSON-RPC envelopes, lifecycle, tool discovery, and invocation are local code | Implemented without an MCP SDK |

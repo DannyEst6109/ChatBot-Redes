@@ -89,8 +89,9 @@ its tools, and executes representative supply queries.
 ## MCP server configuration
 
 `config/mcp-servers.json` defines every external process. The custom supply
-server is enabled by default. Filesystem and Git are included but disabled until
-their official runtimes are installed.
+server and both official reference servers are enabled by default. A server whose
+runtime is missing is reported under `/servers` as a connection error; the
+chatbot keeps running with the servers that did connect.
 
 ### Official Filesystem MCP server
 
@@ -100,14 +101,12 @@ The configuration uses the official npm package:
 @modelcontextprotocol/server-filesystem
 ```
 
-On Windows it is launched through `cmd /c npx`. Its allowed directory is limited
-to this repository. Set `enabled` to `true` in `config/mcp-servers.json` after
-confirming that `npx` is available.
+On Windows it is launched through `cmd /c npx`, so `npx` must be on the path.
+Its allowed directory is limited to this repository.
 
 ### Official Git MCP server
 
-Install `uv`, verify that `uvx` is available, and enable the `git` entry in the
-configuration. It runs:
+Install `uv` and verify that `uvx` is available. The configuration runs:
 
 ```text
 uvx --with "mcp<2" mcp-server-git --repository <workspace>

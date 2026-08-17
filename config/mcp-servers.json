@@ -7,7 +7,7 @@
       "cwd": "${workspaceRoot}"
     },
     "filesystem": {
-      "enabled": false,
+      "enabled": true,
       "command": "cmd",
       "args": [
         "/c",
@@ -19,7 +19,7 @@
       "cwd": "${workspaceRoot}"
     },
     "git": {
-      "enabled": false,
+      "enabled": true,
       "command": "uvx",
       "args": [
         "--with",

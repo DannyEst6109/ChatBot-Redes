@@ -23,9 +23,9 @@
 
 ## Official server scenario
 
-After installing the official servers, enable `filesystem` and `git` in
-`config/mcp-servers.json`, restart the chatbot, and verify `/servers` and
-`/tools`. Use a temporary directory inside this repository for the scenario:
+Both official servers are enabled by default. Start the chatbot and verify
+`/servers` and `/tools`. Use a temporary directory inside this repository for
+the scenario:
 
 1. Ask Filesystem to create `official-server-demo/README.md`.
 2. Ask Git for the repository status.
