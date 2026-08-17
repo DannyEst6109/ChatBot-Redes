@@ -1,0 +1,16 @@
+{
+  "baseDate": "2026-08-16",
+  "horizonDays": 30,
+  "overrides": [
+    {"center":"DC-PROD","materialCode":"SYN-PROD-001","dayOffset":2,"quantity":90},
+    {"center":"DC-PROD","materialCode":"SYN-PROD-001","dayOffset":3,"quantity":80},
+    {"center":"DC-PROD","materialCode":"SYN-PROD-003","dayOffset":1,"quantity":45},
+    {"center":"DC-PROD","materialCode":"SYN-PROD-003","dayOffset":2,"quantity":60},
+    {"center":"DC-PROD","materialCode":"SYN-PROD-005","dayOffset":5,"quantity":70},
+    {"center":"DC-STORES","materialCode":"SYN-STORE-001","dayOffset":1,"quantity":85},
+    {"center":"DC-STORES","materialCode":"SYN-STORE-001","dayOffset":2,"quantity":90},
+    {"center":"DC-STORES","materialCode":"SYN-STORE-002","dayOffset":3,"quantity":30},
+    {"center":"DC-STORES","materialCode":"SYN-STORE-003","dayOffset":1,"quantity":600},
+    {"center":"DC-STORES","materialCode":"SYN-STORE-005","dayOffset":4,"quantity":80}
+  ]
+}

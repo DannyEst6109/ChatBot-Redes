@@ -1,0 +1,9 @@
+{
+  "operationalDate": "2026-08-16",
+  "sources": [
+    {"name":"SYNTHETIC_INVENTORY","updatedAt":"2026-08-16T06:00:00-06:00","status":"CURRENT","records":16},
+    {"name":"SYNTHETIC_DEMAND_PLAN","updatedAt":"2026-08-16T05:45:00-06:00","status":"CURRENT","records":10},
+    {"name":"SYNTHETIC_SCHEDULED_RECEIPTS","updatedAt":"2026-08-15T18:00:00-06:00","status":"CURRENT","records":7},
+    {"name":"SYNTHETIC_MATERIAL_MASTER","updatedAt":"2026-08-10T08:00:00-06:00","status":"STALE","records":16}
+  ]
+}

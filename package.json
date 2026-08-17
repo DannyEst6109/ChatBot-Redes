@@ -1,0 +1,24 @@
+{
+  "name": "supply-control-mcp-chatbot",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Manual MCP and JSON-RPC chatbot for food supply planning",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "chatbot": "node --enable-source-maps dist/src/chatbot/cli.js",
+    "mcp:supply": "node --enable-source-maps dist/src/mcp/supply-server-entry.js",
+    "demo": "node --enable-source-maps dist/src/demo/run-demo.js",
+    "demo:filesystem": "node --enable-source-maps dist/src/demo/run-official-readonly-demo.js filesystem",
+    "demo:git": "node --enable-source-maps dist/src/demo/run-official-readonly-demo.js git",
+    "test": "npm run build && node --test \"dist/test/*.test.js\"",
+    "check": "npm run build && npm test"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  }
+}

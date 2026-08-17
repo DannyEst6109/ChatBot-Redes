@@ -1,0 +1,18 @@
+[
+  {"center":"DC-PROD","materialCode":"SYN-PROD-001","onHand":180,"reserved":30,"averageDailyDemand":55},
+  {"center":"DC-PROD","materialCode":"SYN-PROD-002","onHand":900,"reserved":50,"averageDailyDemand":70},
+  {"center":"DC-PROD","materialCode":"SYN-PROD-003","onHand":120,"reserved":20,"averageDailyDemand":32},
+  {"center":"DC-PROD","materialCode":"SYN-PROD-004","onHand":0,"reserved":0,"averageDailyDemand":24},
+  {"center":"DC-PROD","materialCode":"SYN-PROD-005","onHand":330,"reserved":30,"averageDailyDemand":28},
+  {"center":"DC-PROD","materialCode":"SYN-PROD-006","onHand":160,"reserved":10,"averageDailyDemand":4},
+  {"center":"DC-PROD","materialCode":"SYN-PROD-007","onHand":100,"reserved":0,"averageDailyDemand":5},
+  {"center":"DC-PROD","materialCode":"SYN-PROD-008","onHand":5000,"reserved":200,"averageDailyDemand":180},
+  {"center":"DC-STORES","materialCode":"SYN-STORE-001","onHand":210,"reserved":40,"averageDailyDemand":62},
+  {"center":"DC-STORES","materialCode":"SYN-STORE-002","onHand":70,"reserved":10,"averageDailyDemand":18},
+  {"center":"DC-STORES","materialCode":"SYN-STORE-003","onHand":1800,"reserved":300,"averageDailyDemand":420},
+  {"center":"DC-STORES","materialCode":"SYN-STORE-004","onHand":9000,"reserved":200,"averageDailyDemand":380},
+  {"center":"DC-STORES","materialCode":"SYN-STORE-005","onHand":400,"reserved":80,"averageDailyDemand":48},
+  {"center":"DC-STORES","materialCode":"SYN-STORE-006","onHand":850,"reserved":100,"averageDailyDemand":75},
+  {"center":"DC-STORES","materialCode":"SYN-STORE-007","onHand":20000,"reserved":1000,"averageDailyDemand":0},
+  {"center":"DC-STORES","materialCode":"SYN-STORE-008","onHand":0,"reserved":0,"averageDailyDemand":0}
+]

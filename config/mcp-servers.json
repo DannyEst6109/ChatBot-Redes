@@ -1,0 +1,34 @@
+{
+  "servers": {
+    "supply": {
+      "enabled": true,
+      "command": "node",
+      "args": ["dist/src/mcp/supply-server-entry.js"],
+      "cwd": "${workspaceRoot}"
+    },
+    "filesystem": {
+      "enabled": false,
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "${workspaceRoot}"
+      ],
+      "cwd": "${workspaceRoot}"
+    },
+    "git": {
+      "enabled": false,
+      "command": "uvx",
+      "args": [
+        "--with",
+        "mcp<2",
+        "mcp-server-git",
+        "--repository",
+        "${workspaceRoot}"
+      ],
+      "cwd": "${workspaceRoot}"
+    }
+  }
+}
