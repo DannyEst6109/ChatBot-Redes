@@ -14,6 +14,7 @@
     "demo": "node --enable-source-maps dist/src/demo/run-demo.js",
     "demo:filesystem": "node --enable-source-maps dist/src/demo/run-official-readonly-demo.js filesystem",
     "demo:git": "node --enable-source-maps dist/src/demo/run-official-readonly-demo.js git",
+    "demo:scenario": "node --enable-source-maps dist/src/demo/run-official-scenario.js",
     "test": "npm run build && node --test \"dist/test/*.test.js\"",
     "check": "npm run build && npm test"
   },

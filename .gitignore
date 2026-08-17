@@ -2,6 +2,7 @@ node_modules/
 dist/
 .env
 logs/*.jsonl
+demo-workspace/
 coverage/
 *.log
 .DS_Store

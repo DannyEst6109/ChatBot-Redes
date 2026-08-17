@@ -133,6 +133,22 @@ npm run demo:git
 These checks list the allowed academic workspace and show Git status. They do
 not create, stage, commit, or delete files.
 
+### Official server scenario
+
+The complete demonstration required by the course creates a repository, writes a
+README, stages it, and commits it:
+
+```bash
+npm run demo:scenario
+```
+
+It runs against a disposable repository in `demo-workspace/`, which is recreated
+on every run and excluded from version control, so the academic history is never
+modified. The directory is prepared with a local `git init` because the official
+Git MCP server exposes no repository-creation tool; every later step — writing
+the file, staging, reviewing the staged diff, committing, and reading the log —
+is a JSON-RPC `tools/call` through the generic MCP client.
+
 ## Custom Supply Control MCP server
 
 ### Industrial use case

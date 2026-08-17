@@ -24,17 +24,30 @@
 ## Official server scenario
 
 Both official servers are enabled by default. Start the chatbot and verify
-`/servers` and `/tools`. Use a temporary directory inside this repository for
-the scenario:
+`/servers` and `/tools`.
 
-1. Ask Filesystem to create `official-server-demo/README.md`.
+Run the scripted scenario first, so the required demonstration is reproducible
+and independent of how the LLM phrases its tool calls:
+
+```bash
+npm run demo:scenario
+```
+
+It creates a repository, writes a README, stages it, reviews the staged diff,
+commits, and prints the log. Point at the terminal output to show that each step
+is a JSON-RPC `tools/call`. The scenario uses the disposable `demo-workspace/`
+repository, so this repository's history is never modified.
+
+Then repeat the same sequence conversationally to show the LLM driving the
+servers:
+
+1. Ask Filesystem to create a README inside `demo-workspace`.
 2. Ask Git for the repository status.
-3. Ask Git to stage only that demonstration file.
+3. Ask Git to stage only that file.
 4. Review the staged diff before asking Git to commit it.
 5. Ask Git for the latest commit log.
 
-Do not run this scenario with confidential paths. The Filesystem server is
-restricted to the academic repository by configuration.
+Do not run this scenario with confidential paths.
 
 ## Business explanation
 
