@@ -36,12 +36,16 @@ npm install
 npm run build
 ```
 
-Copy `.env.example` to `.env` and set:
+Copy `.env.example` to `.env` and set your API key:
 
 ```text
 ANTHROPIC_API_KEY=your-key
-ANTHROPIC_MODEL=your-enabled-model
 ```
+
+`ANTHROPIC_MODEL` is optional. It defaults to `claude-haiku-4-5`, the lowest-cost
+model that supports tool use, which keeps the free API credit available for many
+runs. Set `ANTHROPIC_MODEL=claude-sonnet-5` for stronger multi-step tool
+reasoning at a higher cost per run.
 
 Never commit `.env` or real company information.
 

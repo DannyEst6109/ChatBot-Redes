@@ -10,10 +10,13 @@ import { ChatSession } from './chat-session.js'
 
 await loadEnvironmentFile()
 
+// Claude Haiku 4.5 keeps the academic budget low while still supporting tool use.
+const DEFAULT_MODEL = 'claude-haiku-4-5'
+
 const apiKey = process.env.ANTHROPIC_API_KEY?.trim()
-const model = process.env.ANTHROPIC_MODEL?.trim()
-if (!apiKey || !model) {
-  console.error('ANTHROPIC_API_KEY and ANTHROPIC_MODEL are required. Copy .env.example to .env and configure both values.')
+const model = process.env.ANTHROPIC_MODEL?.trim() || DEFAULT_MODEL
+if (!apiKey) {
+  console.error('ANTHROPIC_API_KEY is required. Copy .env.example to .env and set your key.')
   console.error('You can run `npm run demo` without an API key.')
   process.exitCode = 1
 } else {
@@ -41,7 +44,9 @@ if (!apiKey || !model) {
 
     console.log('Supply Control MCP Chatbot · Part 1')
     console.log('All operational data is synthetic. Type /help for commands.')
+    console.log(`Model: ${model}`)
     console.log(`Connected servers: ${manager.servers().map((server) => server.name).join(', ')}`)
+    for (const [name, error] of manager.connectionErrors) console.warn(`Server ${name} is unavailable: ${error}`)
 
     let running = true
     while (running) {
