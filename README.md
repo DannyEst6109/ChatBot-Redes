@@ -238,6 +238,19 @@ Requests, notifications, successful results, and protocol errors use JSON-RPC
 2.0 envelopes. The server negotiates MCP revision `2025-11-25`. Messages in the
 stdio transport are UTF-8 JSON objects delimited by newlines.
 
+### Protocol and transport layers
+
+The client separates the two concerns:
+
+- `McpClient` owns the protocol: message envelopes, the initialization
+  handshake, correlation of responses by request id, and timeouts.
+- `McpTransport` moves bytes. `StdioTransport` runs the server as a child
+  process and exchanges newline-delimited JSON over its standard streams.
+
+`McpClient` never learns which transport it is using, so a second transport can
+be added without changing how messages are built or correlated. The automated
+tests exercise the protocol over a scripted in-memory transport to prove this.
+
 ## Business rules
 
 - Available stock is on-hand stock minus reserved stock.

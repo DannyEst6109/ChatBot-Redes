@@ -1,7 +1,8 @@
 import type { AuditLogger } from '../logging/audit-logger.js'
 import { isRecord, type JsonObject } from '../shared/json.js'
+import { McpClient } from './client.js'
 import type { McpConfigFile, McpTool } from './protocol.js'
-import { McpProcessClient } from './process-client.js'
+import { StdioTransport } from './stdio-transport.js'
 
 export interface QualifiedTool {
   name: string
@@ -12,7 +13,7 @@ export interface QualifiedTool {
 }
 
 export class McpManager {
-  private readonly clients = new Map<string, McpProcessClient>()
+  private readonly clients = new Map<string, McpClient>()
   private readonly toolIndex = new Map<string, QualifiedTool>()
   readonly connectionErrors = new Map<string, string>()
 
@@ -24,7 +25,7 @@ export class McpManager {
   async connectAll(): Promise<void> {
     for (const [name, serverConfig] of Object.entries(this.config.servers)) {
       if (!serverConfig.enabled) continue
-      const client = new McpProcessClient(name, serverConfig, this.logger)
+      const client = new McpClient(name, new StdioTransport(name, serverConfig), this.logger)
       try {
         await client.connect()
         this.clients.set(name, client)
@@ -52,7 +53,11 @@ export class McpManager {
   }
 
   servers() {
-    return [...this.clients.entries()].map(([name, client]) => ({ name, info: client.serverInfo }))
+    return [...this.clients.entries()].map(([name, client]) => ({
+      name,
+      transport: client.transportKind,
+      info: client.serverInfo,
+    }))
   }
 
   async callTool(qualifiedName: string, input: unknown): Promise<string> {
