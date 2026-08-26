@@ -27,13 +27,15 @@ does not use an MCP SDK, FastMCP, or an Anthropic SDK.
 - Node.js 22 or newer (Node.js 24 LTS is recommended).
 - npm 10 or newer.
 - An Anthropic API key for the live chatbot.
-- Optional: `uvx` for the official Git MCP server.
+- `uvx` for the official Git MCP server and the complete Part 1 scenario.
 
 ## Installation
 
 ```bash
 npm install
 npm run build
+npx --version
+uvx --version
 ```
 
 Copy `.env.example` to `.env` and set your API key:
@@ -251,6 +253,40 @@ Parameters:
 Reports the operational date, source freshness, row counts, and data-quality
 warnings for all synthetic sources. It has no parameters.
 
+### Custom server interface contract
+
+| Property | Value |
+|---|---|
+| Server name | `synthetic-supply-control` |
+| Server version | `1.0.0` |
+| MCP revision | `2025-11-25` |
+| Transport | Local `stdio` |
+| Executable entry point | `node dist/src/mcp/supply-server-entry.js` |
+| Network endpoint | None in Part 1; newline-delimited messages use stdin/stdout |
+| Encoding | UTF-8 JSON, one JSON-RPC object per line |
+
+The server accepts `initialize`, `notifications/initialized`, `ping`,
+`tools/list`, and `tools/call`. A successful tool call returns both a text
+content block and `structuredContent` containing the same JSON payload. Invalid
+parameters return a tool result with `isError: true`; malformed JSON, unknown
+methods, and invalid request state return standard JSON-RPC error envelopes.
+
+Tool result contracts:
+
+- `list_inventory_risks`: operational date, applied horizon and filters, count,
+  and ordered risk rows with center, material, status, stock, coverage, projected
+  stockout, supplier count, and warnings.
+- `get_material_status`: material master, inventory snapshot, available stock,
+  coverage, status, stockout projection, scheduled receipts, daily projection,
+  and warnings.
+- `get_purchase_recommendations`: operational date, count, and recommendation
+  rows with delivery, target, projected stock, net requirement, rounded purchase
+  quantity, units, residual risk, reason, and warnings.
+- `explain_purchase_recommendation`: observed inputs, calculation steps, unit
+  conversion formula, risk assessment, explanation, and warnings.
+- `get_supply_data_status`: isolation flags, source freshness, record totals, and
+  data-quality warnings.
+
 ## Example prompts
 
 ```text
@@ -314,6 +350,17 @@ npm run check
 The automated tests cover business calculations, validation, MCP initialization,
 tool discovery, tool execution, protocol errors, context handling, and audit logs.
 
+For the complete Part 1 acceptance sequence, run:
+
+```bash
+npm run check
+npm run demo
+npm run demo:scenario
+```
+
+Then run `npm run chatbot`, ask the two linked Alan Turing questions from
+`docs/DEMO.md`, and inspect `/servers`, `/tools`, and `/log`.
+
 ## Repository and academic integrity
 
 - Keep the repository private and grant access only to course staff.
@@ -323,6 +370,14 @@ tool discovery, tool execution, protocol errors, context handling, and audit log
 - The official Filesystem and Git servers are external reference servers; their
   code is not copied into this repository.
 - Generative AI use must follow the university policy.
+
+## References
+
+- [JSON-RPC 2.0 specification](https://www.jsonrpc.org/specification)
+- [MCP architecture](https://modelcontextprotocol.io/docs/learn/architecture)
+- [MCP revision 2025-11-25](https://modelcontextprotocol.io/specification/2025-11-25)
+- [Official MCP servers](https://github.com/modelcontextprotocol/servers)
+- [Anthropic Messages API](https://docs.anthropic.com/en/api/messages)
 
 ## Known Part 1 limitations
 

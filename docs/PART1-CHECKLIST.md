@@ -1,25 +1,43 @@
 # Part 1 Requirements Checklist
 
-This document maps the implementation to the project instructions and is limited
-to the first milestone.
+Audit date: 2026-08-26. This document maps the implementation to the project
+instructions and rubric and is limited to the first milestone.
 
-| Requirement | Evidence | Status |
-|---|---|---|
-| Connect to an LLM through its API | Native HTTPS implementation in `AnthropicGateway` | Implemented; API key required at runtime |
-| Preserve context in one session | `ChatSession` retains user, assistant, tool-use, and tool-result messages | Implemented and tested |
-| Show and retain every MCP interaction | Terminal output plus `logs/mcp-interactions.jsonl` | Implemented and demonstrated |
-| Use official Filesystem MCP server | Official npm command plus `npm run demo:filesystem` | Integrated, verified, and enabled by default |
-| Use official Git MCP server | Compatible official `mcp-server-git` command plus `npm run demo:git` | Integrated, verified, and enabled by default |
-| Demonstrate the required repository scenario | `npm run demo:scenario` creates, writes, stages, commits, and logs | Automated and reproducible |
-| Create an industrial local MCP server | Synthetic food-supply planning server | Implemented |
-| Chatbot uses the local server | Generic process client performs initialize, discovery, and calls | Implemented and tested |
-| Implement MCP manually | JSON-RPC envelopes, lifecycle, tool discovery, and invocation are local code | Implemented without an MCP SDK |
-| Server specification and parameters | Full tool reference in `README.md` | Complete |
-| Installation and usage instructions in English | `README.md` | Complete |
-| Gradual version control | Repository is ready; commit cadence remains the student's responsibility | Student action required |
-| Private repository with staff access | Hosting permission is outside the application | Student action required |
-| Partial presentation/demo | `npm run demo` and `docs/DEMO.md` | Ready |
-| Optional user interface (extra credit) | Terminal interface in `src/ui/`, documented in `README.md` | Implemented |
+| PDF item | Requirement | Evidence | Audit result |
+|---|---|---|---|
+| 1 | Connect to an LLM through its API | Native HTTPS `AnthropicGateway`; live Claude response on 2026-08-26 | Verified |
+| 2 | Preserve context in one session | Live Alan Turing follow-up returned `1912`; automated `ChatSession` tests | Verified |
+| 3 | Display and retain every MCP request and response | Terminal protocol view and `logs/mcp-interactions.jsonl` | Verified |
+| 4 | Use the official local Filesystem and Git MCP servers | Both enabled by default; `npm run demo:scenario` wrote, staged, reviewed, committed, and read the log through MCP | Verified |
+| 5 | Create and use a local industrial MCP server | Five synthetic supply-planning tools; custom server used by the generic client | Verified |
+| 5 | Publish the server specification, parameters, usage, and examples | Complete English contract and tool reference in `README.md` | Verified locally; remote sync confirmed |
+| 5 | Industry use case approved before implementation | Approval is not technical evidence and must be confirmed by the student | Student confirmation required |
+| 3.1 | Implement the protocol manually without MCP libraries or SDKs | Local JSON-RPC envelopes, lifecycle, client, server, and transport; no runtime dependency | Verified |
+| 3.1 | Work from a terminal or command line | Terminal chatbot and independent server/demo scripts | Verified |
+| 3.2 | Document the code and provide a detailed English README | Source comments plus installation, operation, architecture, contract, and examples | Verified |
+| 3.2 | Use a private repository and grant course staff access | `main` matches `origin/main`; privacy and collaborator access cannot be inferred from local Git | GitHub confirmation required |
+| 3.2 | Show gradual version-control development | 11 focused commits exist, but all current commits are dated 2026-08-16 | Continue honest commits over time |
+| 3.3 | Present features, difficulties and resolutions, and lessons learned | Reproducible commands and presentation script in `docs/DEMO.md` | Ready; oral delivery required |
+| Extra | Add a usable terminal UI | Semantic colour, hierarchy, progress, tables, plain fallback, and UI tests | Implemented |
+
+## Verification record
+
+- `npm run check`: 55 of 55 tests passed.
+- `npm run demo`: the custom server and all three configured servers initialized.
+- `npm run demo:scenario`: Filesystem wrote the README and Git staged, diffed,
+  committed, and read the log in the isolated `demo-workspace/` repository.
+- Live chatbot: Claude answered a general question and resolved a contextual
+  pronoun in the next question.
+- `main` is zero commits ahead of and zero commits behind `origin/main` before
+  this audit update.
+
+## Before submitting
+
+1. Confirm the GitHub repository is private.
+2. Confirm the professor and teaching assistants have access.
+3. Confirm or document the professor's approval of the industrial use case.
+4. Commit and push this audit update with a truthful message.
+5. Rehearse `docs/DEMO.md`; presentation delivery cannot be automated.
 
 ## Deliberately excluded
 

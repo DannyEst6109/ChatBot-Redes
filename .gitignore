@@ -3,7 +3,7 @@ dist/
 .env
 logs/*.jsonl
 demo-workspace/
+tmp/
 coverage/
 *.log
 .DS_Store
-

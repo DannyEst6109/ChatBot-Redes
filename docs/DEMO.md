@@ -13,13 +13,15 @@
 1. Explain the host, client, and server processes.
 2. Show the `initialize` request and response in the log.
 3. Show `notifications/initialized` and `tools/list`.
-4. Ask: "Which DC-PROD materials may run out in the next seven days?"
-5. Ask: "Why is the flour material critical?"
-6. Ask: "How much should be purchased?"
-7. Ask: "Does that purchase eliminate every stockout?"
-8. Ask: "Are all data sources current?"
-9. Show that a follow-up refers to the previous material, proving session context.
-10. Call a material that does not exist and show the controlled MCP tool error.
+4. Ask: "Who was Alan Turing? Answer in one sentence."
+5. Ask: "In what year was he born?" Explain that `he` proves session context.
+6. Ask: "Which DC-PROD materials may run out in the next seven days?"
+7. Ask: "Why is the flour material critical?"
+8. Ask: "How much should be purchased?"
+9. Ask: "Does that purchase eliminate every stockout?"
+10. Ask: "Are all data sources current?"
+11. Show that a follow-up refers to the previous material, proving tool-assisted context.
+12. Call a material that does not exist and show the controlled MCP tool error.
 
 ## Official server scenario
 
@@ -77,9 +79,19 @@ Do not run this scenario with confidential paths.
 - The client discovers tools dynamically and can connect to multiple servers.
 - The official Filesystem and Git servers use the same generic client.
 
-## Difficulties and lessons learned
+## Difficulties and solutions
 
-- stdout contamination breaks stdio protocols, so diagnostics must use stderr.
-- Request correlation must be registered before writing to avoid a fast-response race.
-- The LLM must not calculate inventory because deterministic rules are auditable.
-- Synthetic adapters protect confidential operational information and improve repeatability.
+| Difficulty | Resolution |
+|---|---|
+| Protocol diagnostics can corrupt `stdio` messages. | Reserve stdout for JSON-RPC and send diagnostics to stderr. |
+| A fast response can arrive before the request is tracked. | Register request correlation before writing to the transport. |
+| The Git server resolved an incompatible MCP Python 2.x API. | Pin `mcp<2` in the reproducible `uvx` command. |
+| A repository cannot be created by the official Git server. | Initialize only the disposable repository locally, then perform every required file and Git action through MCP. |
+| Real inventory data would expose company information. | Use deterministic synthetic adapters with explicit isolation metadata. |
+
+## Lessons learned
+
+- Protocol and transport are separate responsibilities and should be tested independently.
+- Business calculations belong in deterministic tools; the LLM should coordinate and explain them.
+- Complete protocol logs make tool decisions auditable without overwhelming the default interface.
+- An isolated demonstration workspace protects the academic repository and makes the demo repeatable.
