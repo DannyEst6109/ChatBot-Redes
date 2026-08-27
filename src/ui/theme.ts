@@ -1,12 +1,6 @@
 import type { TerminalCapabilities } from './capabilities.js'
 
-/**
- * Semantic names for every colour used by the interface.
- *
- * Callers never choose a colour directly. They state what the text means, so
- * the meaning stays consistent across the transcript, tables, and headers, and
- * the palette can change in one place.
- */
+/** Nombres semánticos para los colores utilizados por la interfaz. */
 export type Token =
   | 'sinStock'
   | 'critico'
@@ -21,9 +15,7 @@ export type Token =
   | 'error'
   | 'success'
 
-// Basic ANSI codes are used instead of 256-colour or truecolour because every
-// terminal that supports colour at all supports these, including older Windows
-// consoles.
+// Se usan códigos ANSI básicos para mantener compatibilidad con terminales antiguas.
 const CODES: Record<Token, string> = {
   sinStock: '1;91', // bold bright red: stock already exhausted
   critico: '33', // amber: will be exhausted within the horizon
@@ -41,18 +33,13 @@ const CODES: Record<Token, string> = {
 
 const RESET = '[0m'
 
-/** Wraps text in the colour for `token`, or returns it unchanged without colour support. */
+/** Aplica el color del token cuando la terminal lo permite. */
 export function paint(capabilities: TerminalCapabilities, token: Token, text: string): string {
   if (!capabilities.color || text === '') return text
   return `[${CODES[token]}m${text}${RESET}`
 }
 
-/**
- * Maps an operational status from the supply server to its colour.
- *
- * Colour is never the only signal: callers print the status label alongside it,
- * so the information survives colour blindness and redirected output.
- */
+/** Asigna un color a cada estado sin utilizarlo como único indicador. */
 export function statusToken(status: string): Token {
   switch (status) {
     case 'SIN_STOCK':
@@ -71,13 +58,13 @@ export function statusToken(status: string): Token {
   }
 }
 
-/** Removes ANSI escapes so widths can be measured on the visible text. */
+/** Elimina códigos ANSI para medir únicamente el texto visible. */
 export function stripAnsi(text: string): string {
   // eslint-disable-next-line no-control-regex
   return text.replace(/\[[0-9;]*m/gu, '')
 }
 
-/** Counts visible characters, ignoring escapes. */
+/** Cuenta caracteres visibles sin incluir códigos ANSI. */
 export function displayWidth(text: string): number {
   return [...stripAnsi(text)].length
 }

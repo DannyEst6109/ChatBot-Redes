@@ -1,10 +1,10 @@
-/** What the current output device supports, resolved once at startup. */
+/** Capacidades de la terminal detectadas al iniciar el programa. */
 export interface TerminalCapabilities {
-  /** ANSI colour may be emitted. */
+  /** Indica si se pueden utilizar colores ANSI. */
   color: boolean
-  /** Text may be redrawn in place, which spinners require. */
+  /** Permite redibujar una línea, requisito para el indicador de actividad. */
   animate: boolean
-  /** Usable width in columns for wrapping and tables. */
+  /** Ancho disponible para ajustar texto y tablas. */
   width: number
 }
 
@@ -18,19 +18,15 @@ export interface CapabilitySources {
 }
 
 /**
- * Resolves terminal capabilities from the output stream and the environment.
- *
- * Colour is suppressed when the output is redirected to a file or pipe, when
- * NO_COLOR is set, and on terminals that declare themselves incapable. This
- * keeps captured output readable as plain text, which matters because the
- * course demonstration redirects this program's output.
+ * Detecta las capacidades a partir de la salida y las variables de entorno.
+ * El color se desactiva cuando la salida se redirige o se define `NO_COLOR`.
  */
 export function detectCapabilities(sources: CapabilitySources = {}): TerminalCapabilities {
   const env = sources.env ?? process.env
   const isTTY = sources.isTTY ?? process.stdout.isTTY ?? false
   const columns = sources.columns ?? process.stdout.columns
 
-  // https://no-color.org: any value, including an empty one, disables colour.
+  // Según https://no-color.org, cualquier valor desactiva el color.
   const disabled = env.NO_COLOR !== undefined || env.TERM === 'dumb'
   const forced = env.FORCE_COLOR !== undefined && env.FORCE_COLOR !== '0'
   const color = forced || (isTTY && !disabled)

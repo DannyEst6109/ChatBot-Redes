@@ -1,12 +1,7 @@
 import type { TerminalCapabilities } from './capabilities.js'
 import { displayWidth, paint } from './theme.js'
 
-/**
- * Wraps plain text to `width` columns, preserving the author's line breaks.
- *
- * Wrapping runs on uncoloured text so the measured width matches what the
- * reader sees; colour is applied afterwards, one line at a time.
- */
+/** Ajusta texto sin color al ancho indicado y conserva los saltos existentes. */
 export function wrap(text: string, width: number): string[] {
   if (width <= 0) return [text]
   const lines: string[] = []
@@ -18,8 +13,7 @@ export function wrap(text: string, width: number): string[] {
     }
     let current = ''
     for (const word of paragraph.split(/\s+/u).filter(Boolean)) {
-      // A word longer than the available width is broken rather than allowed
-      // to overflow, which would corrupt table and indentation alignment.
+      // Las palabras demasiado largas se dividen para no desalinear la salida.
       if (displayWidth(word) > width) {
         if (current !== '') {
           lines.push(current)
@@ -51,13 +45,13 @@ function chunkWord(word: string, width: number): string[] {
   return chunks
 }
 
-/** Prefixes every line, using blanks of equal width after the first. */
+/** Agrega un prefijo y alinea las líneas siguientes con espacios. */
 export function indent(lines: readonly string[], prefix: string): string[] {
   const continuation = ' '.repeat(displayWidth(prefix))
   return lines.map((line, index) => `${index === 0 ? prefix : continuation}${line}`)
 }
 
-/** Shortens text to `width`, marking the cut with an ellipsis. */
+/** Recorta el texto al ancho indicado y agrega puntos suspensivos. */
 export function truncate(text: string, width: number): string {
   if (width <= 0) return ''
   const characters = [...text]
@@ -66,13 +60,13 @@ export function truncate(text: string, width: number): string {
   return `${characters.slice(0, width - 1).join('')}…`
 }
 
-/** Pads text on the right to `width` visible characters. */
+/** Completa con espacios hasta alcanzar el ancho visible. */
 export function padEnd(text: string, width: number): string {
   const missing = width - displayWidth(text)
   return missing > 0 ? `${text}${' '.repeat(missing)}` : text
 }
 
-/** A horizontal rule spanning the usable width. */
+/** Crea una línea horizontal del ancho disponible. */
 export function rule(capabilities: TerminalCapabilities): string {
   return paint(capabilities, 'muted', '─'.repeat(capabilities.width))
 }
@@ -84,10 +78,7 @@ export interface HeaderInfo {
   unavailable: readonly string[]
 }
 
-/**
- * Builds the fixed header: the persistent context a user needs while reading
- * the conversation, kept to two lines so it never competes with the dialogue.
- */
+/** Construye un encabezado breve con el modelo y los servidores conectados. */
 export function header(capabilities: TerminalCapabilities, info: HeaderInfo): string[] {
   const title = paint(capabilities, 'heading', 'Supply Control MCP')
   const model = paint(capabilities, 'muted', `· ${info.model}`)

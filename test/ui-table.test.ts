@@ -19,7 +19,7 @@ test('aligns columns regardless of accented content', () => {
   )
   const columnStart = lines.map((line) => line.indexOf('D') >= 0 ? line.length : line.length)
   assert.equal(lines.length, 3)
-  // Every data row starts its second column at the same offset.
+  // La segunda columna debe comenzar en la misma posición en todas las filas.
   const offsets = lines.slice(1).map((line) => line.indexOf('  ', 3))
   assert.equal(offsets[0], offsets[1])
   assert.ok(columnStart.every((value) => value > 0))

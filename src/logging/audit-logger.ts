@@ -12,10 +12,10 @@ export interface AuditRecord {
   message: JsonValue
 }
 
-/** Receives every recorded interaction for display. */
+/** Recibe cada interacción registrada para mostrarla en pantalla. */
 export type AuditSink = (record: AuditRecord) => void
 
-/** The plain presentation used by the demos, which have no terminal interface. */
+/** Formato sencillo utilizado por las demostraciones sin interfaz interactiva. */
 export function defaultSink(record: AuditRecord): void {
   const outbound = record.direction === 'REQUEST' || record.direction === 'NOTIFICATION'
   console.error(`[MCP ${outbound ? '→' : '←'} ${record.server} · ${record.direction}] ${JSON.stringify(record.message)}`)
@@ -26,9 +26,8 @@ export class AuditLogger {
   private readonly sink: AuditSink | null
 
   /**
-   * `output` selects the presentation: `true` keeps the plain console format,
-   * `false` records silently, and a function lets the caller render records its
-   * own way. The JSONL file is written identically in every case.
+   * `output` controla la salida visible. El archivo JSONL se escribe siempre con
+   * el mismo formato, aunque el registro no se muestre en la consola.
    */
   constructor(path = 'logs/mcp-interactions.jsonl', output: boolean | AuditSink = true) {
     this.path = resolve(path)
@@ -48,4 +47,3 @@ export class AuditLogger {
     this.sink?.(entry)
   }
 }
-

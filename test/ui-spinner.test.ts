@@ -49,7 +49,7 @@ test('erases itself around other output so lines never collide', () => {
 
   let printedWhileClear = false
   spinner.around(() => {
-    // The last write before this callback must have cleared the line.
+    // La última escritura antes del callback debe limpiar la línea.
     printedWhileClear = output.writes.at(-1)?.includes('[2K') ?? false
   })
   spinner.stop()

@@ -12,14 +12,8 @@ interface PendingRequest {
 }
 
 /**
- * Renders MCP traffic for the terminal.
- *
- * Requirement 3 of the course asks for every interaction to be shown, but the
- * raw envelopes run to thousands of characters per call and bury the
- * conversation. The compact mode states what happened in one line per message
- * and keeps the dialogue readable; `verbose` restores the full envelopes. The
- * complete record is written to the JSONL file under both modes, so nothing is
- * lost either way.
+ * Presenta el tráfico MCP en la terminal. El modo compacto resume cada mensaje;
+ * el modo detallado muestra el sobre completo. Ambos se guardan completos en JSONL.
  */
 export class ProtocolFormatter {
   private readonly pending = new Map<string, PendingRequest>()
@@ -33,7 +27,7 @@ export class ProtocolFormatter {
     return this.verbosity
   }
 
-  /** Switches between the one-line and full-envelope views. */
+  /** Alterna entre la vista compacta y el mensaje completo. */
   toggle(): ProtocolVerbosity {
     this.verbosity = this.verbosity === 'compact' ? 'verbose' : 'compact'
     return this.verbosity
@@ -71,7 +65,7 @@ export class ProtocolFormatter {
     }
   }
 
-  /** Records the request so its response can report a round-trip time. */
+  /** Guarda la solicitud para calcular el tiempo de respuesta. */
   private rememberRequest(record: AuditRecord, message: Record<string, unknown>): string {
     const method = String(message.method ?? 'solicitud')
     const id = message.id
@@ -105,7 +99,7 @@ export class ProtocolFormatter {
   }
 }
 
-/** Describes a result by shape rather than dumping it. */
+/** Resume la estructura del resultado sin imprimirlo por completo. */
 function summarize(result: unknown): string {
   if (!isRecord(result)) return 'ok'
   if (Array.isArray(result.tools)) return count(result.tools.length, 'herramienta', 'herramientas')
@@ -119,7 +113,7 @@ function summarize(result: unknown): string {
   return 'ok'
 }
 
-/** Agrees the noun with the number, since these lines are read constantly. */
+/** Selecciona singular o plural según la cantidad. */
 export function count(total: number, singular: string, plural: string): string {
   return `${total} ${total === 1 ? singular : plural}`
 }

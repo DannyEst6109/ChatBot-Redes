@@ -2,28 +2,21 @@ import type { TerminalCapabilities } from './capabilities.js'
 import { paint } from './theme.js'
 import { truncate } from './render.js'
 
-/** Minimal sink so the spinner can be driven and inspected in tests. */
+/** Salida mínima que también permite probar el indicador. */
 export interface SpinnerOutput {
   write(text: string): void
 }
 
 const FRAMES = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'] as const
 
-/**
- * A fast frame rate is deliberate: perceived waiting time drops when the
- * indicator moves quickly, even though the request takes exactly as long.
- */
+/** Intervalo de actualización del indicador de actividad. */
 const FRAME_MS = 80
 
 const CLEAR_LINE = '\r[2K'
 
 /**
- * Shows that the program is working while the model or a tool responds.
- *
- * Without it the terminal stays silent for seconds and looks frozen. The
- * spinner also names the tool currently running, turning an opaque wait into
- * legible progress. On a non-interactive stream it degrades to a single
- * printed line, so redirected output stays clean.
+ * Indica que el modelo o una herramienta sigue trabajando. En una salida no
+ * interactiva se reemplaza por una sola línea de texto.
  */
 export class Spinner {
   private index = 0
@@ -49,18 +42,18 @@ export class Spinner {
     }
     this.draw()
     this.timer = setInterval(() => this.advance(), FRAME_MS)
-    // Never keep the process alive just to spin.
+    // El temporizador no debe mantener vivo el proceso por sí solo.
     this.timer.unref?.()
   }
 
-  /** Replaces the message without interrupting the animation. */
+  /** Cambia el mensaje sin reiniciar la animación. */
   setLabel(label: string): void {
     if (this.label === label) return
     this.label = label
     if (this.active && this.capabilities.animate) this.draw()
   }
 
-  /** Advances one frame. Called by the timer, and directly by tests. */
+  /** Avanza un cuadro de la animación. */
   advance(): void {
     this.index = (this.index + 1) % FRAMES.length
     if (this.active && this.capabilities.animate) this.draw()
@@ -75,12 +68,7 @@ export class Spinner {
     this.active = false
   }
 
-  /**
-   * Erases the spinner, runs `write`, then restores it.
-   *
-   * MCP traffic arrives while the spinner is running; without this the two
-   * would overwrite each other on the same line.
-   */
+  /** Borra temporalmente el indicador para escribir otra salida sin mezclar líneas. */
   around(write: () => void): void {
     const wasActive = this.active && this.capabilities.animate
     if (wasActive) this.output.write(CLEAR_LINE)

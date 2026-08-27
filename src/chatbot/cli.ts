@@ -18,13 +18,13 @@ import { ChatSession } from './chat-session.js'
 
 await loadEnvironmentFile()
 
-// Claude Haiku 4.5 keeps the academic budget low while still supporting tool use.
+// Haiku mantiene bajo el costo del proyecto y permite utilizar herramientas.
 const DEFAULT_MODEL = 'claude-haiku-4-5'
 
 const apiKey = process.env.ANTHROPIC_API_KEY?.trim()
 const model = process.env.ANTHROPIC_MODEL?.trim() || DEFAULT_MODEL
 
-// Mutable so `/plain` can turn colour off without restarting the session.
+// Es mutable porque `/plain` cambia el uso de color durante la sesión.
 const capabilities = detectCapabilities()
 const write = (lines: readonly string[]): void => {
   for (const line of lines) console.log(line)
@@ -39,7 +39,7 @@ if (!apiKey) {
   const spinner = new Spinner(capabilities)
 
   const logger = new AuditLogger(process.env.MCP_LOG_PATH ?? 'logs/mcp-interactions.jsonl', (record) => {
-    // Name the running tool in the spinner, so a wait becomes visible progress.
+    // Muestra el nombre de la herramienta que se está ejecutando.
     const message = record.message
     if (record.direction === 'REQUEST' && typeof message === 'object' && message !== null && !Array.isArray(message)) {
       const params = message.params
@@ -74,9 +74,7 @@ if (!apiKey) {
       { execute: (name, input) => manager.callTool(name, input) },
     )
     const terminal = createInterface({ input: process.stdin, output: process.stdout })
-    // A terminal echoes what the user types, so the prompt is enough. A scripted
-    // session echoes nothing, so the prompt is suppressed and the transcript
-    // renders the question itself; otherwise the label would appear twice.
+    // Una terminal interactiva ya muestra lo escrito; una entrada redirigida no.
     const prompt = capabilities.animate ? paint(capabilities, 'user', ' Tú   ') : ''
 
     write(header(capabilities, {
@@ -87,9 +85,7 @@ if (!apiKey) {
     }))
     write([paint(capabilities, 'muted', ' Datos sintéticos. /help para ver los comandos.'), ''])
 
-    // On a terminal each turn is prompted; `question` never settles once
-    // standard input ends, so the close event ends the loop. A scripted session
-    // is simply iterated, which already stops at end of input.
+    // El evento close permite terminar el ciclo cuando finaliza la entrada estándar.
     const closed = new Promise<null>((resolve) => terminal.once('close', () => resolve(null)))
     async function* prompted(): AsyncGenerator<string> {
       while (true) {
@@ -141,9 +137,7 @@ if (!apiKey) {
     terminal.close()
 
     async function ask(question: string): Promise<void> {
-      // On a terminal the prompt already shows what was typed, so echoing it
-      // again would duplicate the line. When the session is scripted or piped,
-      // nothing echoed it, and the transcript needs the question to make sense.
+      // En una entrada redirigida se imprime la pregunta porque no existe eco de terminal.
       if (!capabilities.animate) write(userTurn(capabilities, question))
       spinner.start('consultando el modelo')
       try {

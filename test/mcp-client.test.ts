@@ -35,9 +35,8 @@ test('speaks MCP with the compiled supply server over the stdio transport', asyn
 })
 
 /**
- * Answers every request from an in-memory script instead of a real peer. It
- * proves the protocol layer holds no assumption about how bytes travel, which
- * is what lets a remote transport reuse it unchanged.
+ * Responde desde memoria para comprobar que el protocolo no depende de un
+ * transporte específico.
  */
 class ScriptedTransport implements McpTransport {
   readonly kind = 'scripted'
@@ -71,7 +70,7 @@ test('runs the same protocol logic over a non-stdio transport', async () => {
   const tools = await client.listTools()
   assert.equal(tools[0]?.name, 'ping')
 
-  // initialize, notifications/initialized, tools/list
+  // initialize, notifications/initialized y tools/list
   assert.equal(transport.sent.length, 3)
   assert.equal(transport.sent[1]?.method, 'notifications/initialized')
   assert.equal(transport.sent[1]?.id, undefined)

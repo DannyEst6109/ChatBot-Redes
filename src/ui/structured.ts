@@ -7,17 +7,10 @@ import { statusToken } from './theme.js'
 const MAXIMUM_COLUMNS = 6
 const MAXIMUM_ROWS = 12
 
-/** Columns that add noise rather than meaning in a terminal table. */
+/** Campos que no aportan información útil en la tabla de terminal. */
 const HIDDEN = new Set(['warnings', 'baseUnit'])
 
-/**
- * Spanish headers for the fields this server returns.
- *
- * The wire format stays in English, as a protocol should; only the label a
- * person reads is translated, so the table matches the rest of the interface
- * instead of mixing languages within one line. Unknown fields fall back to the
- * derived heading, so a new tool still renders sensibly.
- */
+/** Etiquetas en español para los campos más comunes del servidor. */
 const LABELS: Record<string, string> = {
   availableStock: 'Disponible',
   averageDailyDemand: 'Demanda diaria',
@@ -51,19 +44,12 @@ const LABELS: Record<string, string> = {
   warehouse: 'Almacén',
 }
 
-/** The reader's label for a field, falling back to a derived heading. */
+/** Obtiene la etiqueta de un campo o genera una a partir de su nombre. */
 export function label(key: string): string {
   return LABELS[key] ?? humanize(key)
 }
 
-/**
- * Turns the structured payload of a tool result into a table.
- *
- * The supply server returns `structuredContent` alongside its text, so the
- * interface can present the records itself instead of depending on how the
- * model chose to describe them. Detection is generic: the first array of
- * objects becomes the table, so any tool benefits without special cases.
- */
+/** Convierte el primer arreglo de objetos de `structuredContent` en una tabla. */
 export function tableFromStructured(
   capabilities: TerminalCapabilities,
   structured: JsonValue | undefined,
@@ -99,8 +85,7 @@ export function tableFromStructured(
 
 function toCell(key: string, value: JsonValue | undefined): TableCell {
   const text = format(value)
-  // Status is the one field whose value carries urgency, so it is coloured.
-  // Every other cell stays neutral to keep colour meaningful.
+  // Solo el estado utiliza color porque representa el nivel de urgencia.
   return key === 'status' ? { text, token: statusToken(text) } : { text }
 }
 
@@ -114,7 +99,7 @@ function format(value: JsonValue | undefined): string {
   return String(value)
 }
 
-/** `materialCode` becomes `Material code`, which reads better as a header. */
+/** Convierte `materialCode` en un encabezado legible. */
 function humanize(key: string): string {
   const spaced = key.replace(/([a-z0-9])([A-Z])/gu, '$1 $2').replace(/[_-]/gu, ' ')
   return spaced.charAt(0).toUpperCase() + spaced.slice(1).toLowerCase()

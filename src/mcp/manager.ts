@@ -12,7 +12,7 @@ export interface QualifiedTool {
   originalName: string
 }
 
-/** Notified of every tool result, so a presentation layer can render it. */
+/** Notifica cada resultado para que la interfaz pueda representarlo. */
 export type ToolResultObserver = (event: {
   server: string
   tool: string
@@ -87,4 +87,3 @@ export class McpManager {
     this.toolIndex.clear()
   }
 }
-

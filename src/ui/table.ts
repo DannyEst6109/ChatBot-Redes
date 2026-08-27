@@ -4,7 +4,7 @@ import { displayWidth, paint, type Token } from './theme.js'
 
 export interface TableCell {
   text: string
-  /** Optional meaning, used to colour the cell. */
+  /** Significado opcional utilizado para colorear la celda. */
   token?: Token
 }
 
@@ -16,13 +16,7 @@ export interface TableColumn {
 const GAP = '  '
 const MINIMUM_COLUMN = 6
 
-/**
- * Renders aligned columns.
- *
- * Tabular data is scanned far faster in columns than in prose, and the supply
- * server already returns structured records, so the interface presents them
- * directly instead of relying on the model to describe them.
- */
+/** Presenta los datos estructurados en columnas alineadas. */
 export function renderTable(
   capabilities: TerminalCapabilities,
   columns: readonly TableColumn[],
@@ -63,7 +57,7 @@ function align(column: TableColumn, text: string, width: number): string {
   return missing > 0 ? `${' '.repeat(missing)}${text}` : text
 }
 
-/** Narrows the widest columns until the table fits the terminal. */
+/** Reduce las columnas más anchas hasta que la tabla quepa en la terminal. */
 function shrinkToFit(widths: number[], available: number): void {
   const gaps = GAP.length * Math.max(0, widths.length - 1)
   let total = widths.reduce((sum, width) => sum + width, 0) + gaps

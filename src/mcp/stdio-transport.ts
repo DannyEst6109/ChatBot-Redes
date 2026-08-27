@@ -6,9 +6,8 @@ import type { McpServerConfig } from './protocol.js'
 import type { McpTransport, TransportHandlers } from './transport.js'
 
 /**
- * Runs an MCP server as a child process and exchanges newline-delimited UTF-8
- * JSON over its standard streams. stdout carries protocol messages only;
- * stderr carries diagnostics.
+ * Ejecuta un servidor MCP como proceso hijo. Los mensajes JSON viajan por
+ * stdin/stdout y los diagnósticos se reciben por stderr.
  */
 export class StdioTransport implements McpTransport {
   readonly kind = 'stdio'

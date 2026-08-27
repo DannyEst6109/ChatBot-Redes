@@ -1,8 +1,5 @@
 #!/usr/bin/env node
-// Reproducible demonstration of requirement 4: the host drives the official
-// Filesystem and Git MCP servers to create a repository, write a README, stage
-// it, and commit it. Everything after the repository is prepared happens over
-// JSON-RPC through the generic MCP client.
+// Demostración reproducible del uso de Filesystem y Git mediante el cliente MCP.
 import { execFile } from 'node:child_process'
 import { mkdir, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
@@ -17,8 +14,7 @@ const run = promisify(execFile)
 const workspaceRoot = process.cwd()
 const scenarioRoot = resolve(workspaceRoot, 'demo-workspace')
 
-// The official Git MCP server exposes no git_init tool, so the disposable
-// repository is prepared locally before the MCP session starts.
+// Git MCP no ofrece git_init, por lo que el repositorio temporal se prepara antes.
 async function prepareRepository(): Promise<void> {
   await rm(scenarioRoot, { recursive: true, force: true })
   await mkdir(scenarioRoot, { recursive: true })
@@ -32,8 +28,7 @@ await prepareRepository()
 const config = await loadMcpConfiguration()
 for (const [name, server] of Object.entries(config.servers)) {
   server.enabled = name === 'filesystem' || name === 'git'
-  // Point both official servers at the disposable repository instead of the
-  // academic workspace, so the scenario never touches the real history.
+  // Ambos servidores apuntan al repositorio temporal para no alterar el historial real.
   server.args = server.args.map((argument) => (argument === workspaceRoot ? scenarioRoot : argument))
 }
 

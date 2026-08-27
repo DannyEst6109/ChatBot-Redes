@@ -4,13 +4,7 @@ import { paint } from './theme.js'
 
 const LABEL_WIDTH = 6
 
-/**
- * Renders one conversational turn.
- *
- * The dialogue is the primary reading surface, so both turns use the full
- * width and high contrast, while the speaker label stays in a fixed gutter so
- * the eye can find the start of each turn without reading it.
- */
+/** Presenta un turno de conversación con la etiqueta del hablante alineada. */
 function turn(
   capabilities: TerminalCapabilities,
   label: string,
@@ -22,7 +16,7 @@ function turn(
   return indent(body.map((line) => paint(capabilities, token, line)), paint(capabilities, 'muted', gutter))
 }
 
-/** Echoes what the user typed, confirming immediately that it was received. */
+/** Muestra el texto recibido del usuario. */
 export function userTurn(capabilities: TerminalCapabilities, text: string): string[] {
   return turn(capabilities, 'Tú', 'user', text)
 }
@@ -31,13 +25,7 @@ export function assistantTurn(capabilities: TerminalCapabilities, text: string):
   return turn(capabilities, 'IA', 'assistant', plainify(text))
 }
 
-/**
- * Strips markdown the model still emits out of habit.
- *
- * A terminal cannot render `**bold**` or `## headings`, so the markers arrive
- * as literal noise. Bullets are normalised to a single character that survives
- * wrapping and indentation.
- */
+/** Elimina marcas de Markdown que una terminal no puede representar. */
 export function plainify(text: string): string {
   return text
     .replace(/\*\*(.+?)\*\*/gsu, '$1')
@@ -46,7 +34,7 @@ export function plainify(text: string): string {
     .replace(/^(\s*)[-*]\s+/gmu, '$1• ')
 }
 
-/** A failure the user must act on, kept distinct from ordinary assistant text. */
+/** Presenta un error que requiere atención del usuario. */
 export function errorTurn(capabilities: TerminalCapabilities, text: string): string[] {
   const gutter = ' !'.padEnd(LABEL_WIDTH, ' ')
   const body = wrap(text.trim(), capabilities.width - LABEL_WIDTH)

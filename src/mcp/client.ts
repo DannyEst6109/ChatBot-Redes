@@ -17,12 +17,8 @@ interface PendingRequest {
 }
 
 /**
- * Speaks MCP over JSON-RPC 2.0 with one server.
- *
- * This class owns the protocol only: message envelopes, the initialization
- * handshake, request/response correlation by id, and timeouts. Moving bytes is
- * delegated to an McpTransport, so the same logic serves a local child process
- * and a remote endpoint alike.
+ * Implementa MCP sobre JSON-RPC 2.0 para un servidor. El transporte se mantiene
+ * separado para poder reutilizar el protocolo con otra forma de conexión.
  */
 export class McpClient {
   private nextId = 1
@@ -38,7 +34,7 @@ export class McpClient {
     private readonly timeoutMs = 15_000,
   ) {}
 
-  /** Reports which transport is in use, for logs and the `/servers` command. */
+  /** Nombre del transporte utilizado, visible en registros y en `/servers`. */
   get transportKind(): string {
     return this.transport.kind
   }
@@ -97,8 +93,7 @@ export class McpClient {
   private async request(method: string, params: JsonObject): Promise<JsonValue> {
     const id = this.nextId++
     const message = { jsonrpc: '2.0' as const, id, method, params }
-    // The pending entry is registered before writing so a fast response cannot
-    // arrive before this client knows how to correlate it.
+    // Se registra la solicitud antes de enviarla para no perder una respuesta rápida.
     const response = new Promise<JsonValue>((resolvePromise, reject) => {
       const timeout = setTimeout(() => {
         this.pending.delete(id)
@@ -128,7 +123,7 @@ export class McpClient {
     const message = payload as JsonRpcSuccess | JsonRpcFailure
     await this.logger.record(this.name, 'RESPONSE', message)
     const pending = this.pending.get(message.id as RequestId)
-    // Server-initiated requests and notifications are recorded but not awaited.
+    // Los mensajes iniciados por el servidor se registran, pero no tienen una promesa pendiente.
     if (!pending) return
     clearTimeout(pending.timeout)
     this.pending.delete(message.id as RequestId)
