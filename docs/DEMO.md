@@ -1,97 +1,327 @@
-# Part 1 Demonstration Script
+# Demostración en vivo - Entrega 1
 
-## Preparation
+Documento de apoyo para seguir la prueba frente al profesor.
 
-1. Run `npm install`.
-2. Run `npm test`.
-3. Run `npm run demo` to prove the manual MCP exchange without an API key.
-4. Configure `.env` and run `npm run chatbot` for the live LLM demonstration.
-5. Keep `logs/mcp-interactions.jsonl` visible in a second terminal.
+> No abrir `.env`, no mostrar la API key y no abrir archivos o sistemas del trabajo.
 
-## Demonstration sequence
+## Preparación antes de compartir pantalla
 
-1. Explain the host, client, and server processes.
-2. Show the `initialize` request and response in the log.
-3. Show `notifications/initialized` and `tools/list`.
-4. Ask: "Who was Alan Turing? Answer in one sentence."
-5. Ask: "In what year was he born?" Explain that `he` proves session context.
-6. Ask: "Which DC-PROD materials may run out in the next seven days?"
-7. Ask: "Why is the flour material critical?"
-8. Ask: "How much should be purchased?"
-9. Ask: "Does that purchase eliminate every stockout?"
-10. Ask: "Are all data sources current?"
-11. Show that a follow-up refers to the previous material, proving tool-assisted context.
-12. Call a material that does not exist and show the controlled MCP tool error.
+Abrir dos ventanas de PowerShell. En ambas ejecutar:
 
-## Official server scenario
+```powershell
+cd "C:\Users\carlos.estrada\Documents\GitHub\ChatBot-Redes"
+```
 
-Both official servers are enabled by default. Start the chatbot and verify
-`/servers` and `/tools`.
+En la primera ventana verificar el proyecto:
 
-Run the scripted scenario first, so the required demonstration is reproducible
-and independent of how the LLM phrases its tool calls:
-
-```bash
+```powershell
+npm run check
 npm run demo:scenario
 ```
 
-It creates a repository, writes a README, stages it, reviews the staged diff,
-commits, and prints the log. Point at the terminal output to show that each step
-is a JSON-RPC `tools/call`. The scenario uses the disposable `demo-workspace/`
-repository, so this repository's history is never modified.
+Resultados que deben aparecer:
 
-Then repeat the same sequence conversationally to show the LLM driving the
-servers:
+- 55 pruebas aprobadas.
+- Filesystem y Git conectados.
+- README creado en `demo-workspace`.
+- Archivo agregado, revisado y comprometido mediante MCP.
 
-1. Ask Filesystem to create a README inside `demo-workspace`.
-2. Ask Git for the repository status.
-3. Ask Git to stage only that file.
-4. Review the staged diff before asking Git to commit it.
-5. Ask Git for the latest commit log.
+Dejar abierta esta ventana como respaldo y limpiar la segunda:
 
-Do not run this scenario with confidential paths.
+```powershell
+Clear-Host
+```
 
-## Business explanation
+## 1. Iniciar el chatbot
 
-- Calculations happen in the deterministic supply server, not in the LLM.
-- Data is synthetic and isolated from external systems.
-- Recommendations are read-only and cannot create purchase orders.
-- Missing parameters are reported instead of guessed.
-- A stockout before lead time triggers a contingency warning.
+En la segunda ventana:
 
-## Interface explanation
+```powershell
+npm run chatbot
+```
 
-- Colour is defined by meaning, not by hue, and never carries information alone.
-- The header, the dialogue, and the protocol log occupy three distinct levels of
-  visual hierarchy.
-- `/verbose` shows the complete JSON-RPC envelopes; the compact view exists to
-  keep the conversation readable, not to hide traffic.
-- `NO_COLOR=1 npm run chatbot` demonstrates the plain-text fallback.
-- Redirecting the output to a file shows the same session without escape
-  sequences, which is how the transcript for the report is captured.
+Verificar en el encabezado:
 
-## Technical explanation
+```text
+supply · filesystem · git
+```
 
-- JSON-RPC 2.0 messages are newline-delimited UTF-8 over stdio.
-- stdout is reserved for protocol messages.
-- stderr carries server diagnostics.
-- Request IDs correlate concurrent responses.
-- The client discovers tools dynamically and can connect to multiple servers.
-- The official Filesystem and Git servers use the same generic client.
+Decir:
 
-## Difficulties and solutions
+> El anfitrión inicia tres servidores locales y realiza el ciclo de inicialización MCP. El cliente fue implementado manualmente y se comunica mediante JSON-RPC 2.0 sobre stdio.
 
-| Difficulty | Resolution |
-|---|---|
-| Protocol diagnostics can corrupt `stdio` messages. | Reserve stdout for JSON-RPC and send diagnostics to stderr. |
-| A fast response can arrive before the request is tracked. | Register request correlation before writing to the transport. |
-| The Git server resolved an incompatible MCP Python 2.x API. | Pin `mcp<2` in the reproducible `uvx` command. |
-| A repository cannot be created by the official Git server. | Initialize only the disposable repository locally, then perform every required file and Git action through MCP. |
-| Real inventory data would expose company information. | Use deterministic synthetic adapters with explicit isolation metadata. |
+## 2. Mostrar servidores y herramientas
 
-## Lessons learned
+Escribir:
 
-- Protocol and transport are separate responsibilities and should be tested independently.
-- Business calculations belong in deterministic tools; the LLM should coordinate and explain them.
-- Complete protocol logs make tool decisions auditable without overwhelming the default interface.
-- An isolated demonstration workspace protects the academic repository and makes the demo repeatable.
+```text
+/servers
+```
+
+Verificar:
+
+- `supply`
+- `filesystem`
+- `git`
+
+Escribir:
+
+```text
+/tools
+```
+
+Verificar aproximadamente:
+
+- Supply: 5 herramientas.
+- Filesystem: 14 herramientas.
+- Git: 12 herramientas.
+
+Decir:
+
+> Las herramientas se descubren dinámicamente con `tools/list`. El administrador agrega el nombre del servidor para evitar colisiones, por ejemplo `supply__get_material_status`.
+
+## 3. Probar la API del LLM
+
+Escribir:
+
+```text
+¿Quién fue Alan Turing? Responde en una oración.
+```
+
+Después:
+
+```text
+¿En qué año nació? Responde únicamente con el año.
+```
+
+Resultado esperado:
+
+```text
+1912
+```
+
+Decir:
+
+> La segunda pregunta no repite el nombre. El chatbot conserva los mensajes de la sesión y por eso comprende que la pregunta todavía se refiere a Alan Turing.
+
+## 4. Probar riesgos de abastecimiento
+
+Escribir exactamente:
+
+```text
+Usa la herramienta de riesgos de abastecimiento. Lista los materiales de DC-PROD con estado SIN_STOCK, CRITICO o EN_RIESGO para un horizonte de siete días.
+```
+
+Resultados principales:
+
+- `SYN-PROD-004`: `SIN_STOCK`.
+- `SYN-PROD-003`: `CRITICO`.
+- `SYN-PROD-001`: `CRITICO`.
+
+Decir:
+
+> Claude interpreta la solicitud, pero los resultados vienen del servidor MCP y de los archivos sintéticos. El modelo no calcula ni inventa el inventario.
+
+## 5. Consultar un material
+
+Escribir:
+
+```text
+Usa la herramienta de abastecimiento para explicar por qué SYN-PROD-001 de DC-PROD está en estado crítico.
+```
+
+Datos que deben aparecer:
+
+- Existencia: 180 KG.
+- Reservado: 30 KG.
+- Disponible: 150 KG.
+- Demanda promedio: 55 KG diarios.
+- Cobertura: aproximadamente 2.73 días.
+- Tiempo de entrega: 4 días.
+
+Decir:
+
+> La disponibilidad es existencia menos inventario reservado. La cobertura se obtiene dividiendo el disponible entre la demanda diaria. Como la cobertura es menor que el tiempo de entrega, existe riesgo de quiebre.
+
+## 6. Probar contexto y recomendación
+
+Escribir:
+
+```text
+¿Cuánto debería comprar para ese mismo material y qué riesgo permanecería?
+```
+
+Resultados esperados:
+
+- 27 sacos.
+- 675 KG.
+- Existe quiebre antes de que llegue la compra.
+- Se necesita una contingencia operativa.
+
+Si preguntan por el cálculo:
+
+```text
+Disponible = 180 - 30 = 150 KG
+Objetivo = 55 × 12 días = 660 KG
+Proyectado a la entrega = 0 KG
+Necesidad neta = 660 - 0 = 660 KG
+Compra = techo(660 / 25) = 27 sacos
+Cantidad base = 27 × 25 = 675 KG
+```
+
+Decir:
+
+> La pregunta dice "ese mismo material", por lo que también demuestra conservación de contexto. La cantidad se calcula en el servidor con reglas determinísticas.
+
+## 7. Validar las fuentes
+
+Escribir:
+
+```text
+Usa la herramienta de estado de datos. ¿Están actualizadas todas las fuentes y están aisladas de sistemas externos?
+```
+
+Verificar:
+
+- `synthetic: true`.
+- `isolatedFromExternalSystems: true`.
+- El maestro de materiales está atrasado.
+- Existe un material con parámetros incompletos.
+
+Decir:
+
+> El servidor también informa problemas de calidad. No oculta ni reemplaza parámetros faltantes con valores inventados.
+
+## 8. Mostrar un mensaje JSON-RPC completo
+
+Activar modo detallado:
+
+```text
+/verbose
+```
+
+Escribir:
+
+```text
+Usa supply__get_material_status con center DC-PROD y material_code SYN-PROD-001.
+```
+
+Señalar en pantalla:
+
+- `jsonrpc: "2.0"`
+- `id`
+- `method: "tools/call"`
+- `params`
+- `result`
+
+Decir:
+
+> El identificador permite relacionar la solicitud con su respuesta. Una notificación no contiene ID porque no espera respuesta.
+
+Regresar al modo compacto:
+
+```text
+/verbose
+```
+
+Mostrar la ruta del registro:
+
+```text
+/log
+```
+
+Decir:
+
+> La terminal puede resumir el tráfico, pero el archivo JSONL siempre conserva las solicitudes y respuestas completas.
+
+## 9. Finalizar el chatbot
+
+```text
+/exit
+```
+
+Decir:
+
+> Al salir, el administrador cierra los clientes y termina los procesos de los servidores.
+
+## 10. Demostrar Filesystem y Git
+
+En la primera terminal volver a ejecutar, si el tiempo lo permite:
+
+```powershell
+npm run demo:scenario
+```
+
+Señalar estas etapas:
+
+```text
+Filesystem: create the README
+Git: status before staging
+Git: stage the README
+Git: review the staged diff
+Git: commit the README
+Git: commit history
+```
+
+Decir:
+
+> El escenario utiliza `demo-workspace`, un repositorio descartable que no modifica el historial académico. Filesystem escribe el README y Git realiza status, add, diff, commit y log mediante `tools/call`.
+
+Si preguntan por `git init`:
+
+> El servidor oficial Git no publica una herramienta `git_init`. Por eso solamente preparo el repositorio temporal de forma local; las operaciones evaluadas se ejecutan mediante MCP.
+
+## Cierre
+
+> La primera entrega demuestra conexión con un LLM, memoria de sesión, registro completo del protocolo, dos servidores oficiales y un servidor industrial propio. Los cálculos son determinísticos y todos los datos son sintéticos. El transporte remoto, la nube y Wireshark corresponden a la segunda parte.
+
+## Contingencias
+
+### Si falla Claude o Internet
+
+```powershell
+npm run demo
+```
+
+Explicar que esta demostración prueba el cliente, el protocolo y el servidor sin depender de la API.
+
+### Si falla Filesystem
+
+```powershell
+npm run demo:filesystem
+```
+
+### Si falla Git
+
+```powershell
+npm run demo:git
+```
+
+### Si Claude no selecciona la herramienta esperada
+
+Utilizar una instrucción explícita:
+
+```text
+Usa obligatoriamente supply__get_material_status con center DC-PROD y material_code SYN-PROD-001.
+```
+
+### Si solo quedan cinco minutos
+
+Mostrar únicamente:
+
+1. `/servers`.
+2. Las dos preguntas de Alan Turing.
+3. Riesgos de DC-PROD.
+4. Recomendación de `SYN-PROD-001`.
+5. Una llamada con `/verbose`.
+6. Resultado final de `npm run demo:scenario`.
+
+## Lista rápida antes de comenzar
+
+- [ ] API configurada sin mostrar `.env`.
+- [ ] Tres servidores conectados.
+- [ ] 55 pruebas aprobadas.
+- [ ] `demo:scenario` ejecutado una vez.
+- [ ] Terminal con letra grande.
+- [ ] Sin ventanas ni información laboral visible.
+- [ ] Primera terminal abierta como respaldo.
