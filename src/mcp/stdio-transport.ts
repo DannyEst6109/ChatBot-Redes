@@ -2,7 +2,7 @@ import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process'
 import { createInterface, type Interface } from 'node:readline'
 
 import type { JsonObject } from '../shared/json.js'
-import type { McpServerConfig } from './protocol.js'
+import type { StdioServerConfig } from './protocol.js'
 import type { McpTransport, TransportHandlers } from './transport.js'
 
 /**
@@ -17,7 +17,7 @@ export class StdioTransport implements McpTransport {
 
   constructor(
     private readonly name: string,
-    private readonly config: McpServerConfig,
+    private readonly config: StdioServerConfig,
   ) {}
 
   async start(handlers: TransportHandlers): Promise<void> {

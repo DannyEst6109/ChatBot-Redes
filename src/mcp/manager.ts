@@ -1,8 +1,10 @@
 import type { AuditLogger } from '../logging/audit-logger.js'
 import { isRecord, type JsonObject } from '../shared/json.js'
 import { McpClient } from './client.js'
+import { HttpTransport } from './http-transport.js'
 import type { McpCallToolResult, McpConfigFile, McpTool } from './protocol.js'
 import { StdioTransport } from './stdio-transport.js'
+import type { McpTransport } from './transport.js'
 
 export interface QualifiedTool {
   name: string
@@ -33,7 +35,10 @@ export class McpManager {
   async connectAll(): Promise<void> {
     for (const [name, serverConfig] of Object.entries(this.config.servers)) {
       if (!serverConfig.enabled) continue
-      const client = new McpClient(name, new StdioTransport(name, serverConfig), this.logger)
+      const transport: McpTransport = serverConfig.transport === 'http'
+        ? new HttpTransport(name, { url: serverConfig.url, ...(serverConfig.apiKey === undefined ? {} : { apiKey: serverConfig.apiKey }) })
+        : new StdioTransport(name, serverConfig)
+      const client = new McpClient(name, transport, this.logger)
       try {
         await client.connect()
         this.clients.set(name, client)

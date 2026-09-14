@@ -28,8 +28,9 @@ await prepareRepository()
 const config = await loadMcpConfiguration()
 for (const [name, server] of Object.entries(config.servers)) {
   server.enabled = name === 'filesystem' || name === 'git'
+  if (server.transport === 'http') continue
   // Ambos servidores apuntan al repositorio temporal para no alterar el historial real.
-  server.args = server.args.map((argument) => (argument === workspaceRoot ? scenarioRoot : argument))
+  server.args = server.args.map((argument: string) => (argument === workspaceRoot ? scenarioRoot : argument))
 }
 
 const manager = new McpManager(config, new AuditLogger(process.env.MCP_LOG_PATH ?? 'logs/mcp-interactions.jsonl', true))

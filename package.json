@@ -11,6 +11,7 @@
     "build": "tsc -p tsconfig.json",
     "chatbot": "node --enable-source-maps dist/src/chatbot/cli.js",
     "mcp:supply": "node --enable-source-maps dist/src/mcp/supply-server-entry.js",
+    "mcp:supply:http": "node --enable-source-maps dist/src/mcp/supply-server-http-entry.js",
     "demo": "node --enable-source-maps dist/src/demo/run-demo.js",
     "demo:filesystem": "node --enable-source-maps dist/src/demo/run-official-readonly-demo.js filesystem",
     "demo:git": "node --enable-source-maps dist/src/demo/run-official-readonly-demo.js git",

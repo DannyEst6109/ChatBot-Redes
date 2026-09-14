@@ -1,0 +1,6 @@
+C:\Users\carlos.estrada\Documents\GitHub\ChatBot-Redes\README.md
+C:\Users\carlos.estrada\Documents\GitHub\ChatBot-Redes\docs\DEMO (1).md
+C:\Users\carlos.estrada\Documents\GitHub\ChatBot-Redes\docs\DEMO.md
+C:\Users\carlos.estrada\Documents\GitHub\ChatBot-Redes\docs\PART1-CHECKLIST.md
+C:\Users\carlos.estrada\Documents\GitHub\ChatBot-Redes\docs\arquitectura-chatbot-mcp.png
+C:\Users\carlos.estrada\Documents\GitHub\ChatBot-Redes\docs\secuencia-consulta-abastecimiento.png

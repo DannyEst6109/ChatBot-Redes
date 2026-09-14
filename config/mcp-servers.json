@@ -6,6 +6,12 @@
       "args": ["dist/src/mcp/supply-server-entry.js"],
       "cwd": "${workspaceRoot}"
     },
+    "supply-remote": {
+      "enabled": false,
+      "transport": "http",
+      "urlEnv": "SUPPLY_REMOTE_URL",
+      "apiKeyEnv": "SUPPLY_REMOTE_API_KEY"
+    },
     "filesystem": {
       "enabled": true,
       "command": "cmd",

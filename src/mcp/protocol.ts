@@ -57,13 +57,23 @@ export interface McpServerInfo {
   version: string
 }
 
-export interface McpServerConfig {
+export interface StdioServerConfig {
   enabled: boolean
+  transport?: 'stdio'
   command: string
   args: string[]
   cwd?: string
   env?: Record<string, string>
 }
+
+export interface HttpServerConfig {
+  enabled: boolean
+  transport: 'http'
+  url: string
+  apiKey?: string
+}
+
+export type McpServerConfig = StdioServerConfig | HttpServerConfig
 
 export interface McpConfigFile {
   servers: Record<string, McpServerConfig>
