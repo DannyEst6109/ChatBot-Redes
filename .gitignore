@@ -1,9 +1,14 @@
 node_modules/
 dist/
+dist-web/
 .env
 logs/*.jsonl
 demo-workspace/
 tmp/
 coverage/
+output/
+.playwright-cli/
+.impeccable/**/*.png
+.impeccable/questions/
 *.log
 .DS_Store

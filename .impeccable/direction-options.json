@@ -1,0 +1,75 @@
+{
+  "title": "Elige el lenguaje visual de Supply Control MCP",
+  "question": "La propuesta principal usa tiras de progreso operativas. Puedes conservarla, elegir una alternativa o pedir una nueva ronda.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Tiras de Operación",
+      "kicker": "RECOMENDADA",
+      "lineage": "tiras de progreso de control aéreo y tableros de despacho",
+      "thesis": "Cada pregunta, herramienta y decisión avanza como una operación trazable.",
+      "palette": ["#F4F0E6", "#13293D", "#F29F05", "#2A7F62", "#C44536"],
+      "materials": ["papel técnico", "pestañas indexadas", "marcas de validación"],
+      "viewport": "Una columna de conversación activa cruza un tablero de riesgos; cada llamada MCP se desprende como una tira enlazada y verificable.",
+      "risk": "La metáfora pierde fuerza si las tiras se reducen a tarjetas genéricas.",
+      "sketch": ".impeccable/sketches/assigned.png"
+    },
+    {
+      "id": "challenger-ticket",
+      "label": "Cartera de Ruta",
+      "kicker": "ALTERNATIVA",
+      "lineage": "billetes aéreos y cupones de ruta de la era jet",
+      "thesis": "La investigación de un riesgo se presenta como un itinerario validado por etapas.",
+      "palette": ["#FAFAF7", "#142B4A", "#C6372D", "#5E3A78"],
+      "materials": ["papel cupón", "numeración carbón", "sellos de estado"],
+      "viewport": "El caso activo ocupa un cupón principal y conserva a la vista las etapas restantes: riesgo, material, recomendación y evidencia.",
+      "risk": "Funde bien y es muy clara, pero una ruta lineal representa peor el monitoreo recurrente.",
+      "case": "Alta claridad; identificación ligeramente menor que el tablero operativo continuo.",
+      "sketch": ".impeccable/sketches/challenger-ticket.png",
+      "hero": "https://impeccable.style/worlds/cards/vernacular-ephemera-jet-age-ticket-wallet-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/vernacular-ephemera-jet-age-ticket-wallet.webp"
+    },
+    {
+      "id": "challenger-teletext",
+      "label": "Teletexto Técnico",
+      "kicker": "ALTERNATIVA",
+      "lineage": "servicios de teletexto con páginas numeradas",
+      "thesis": "Servidores, herramientas y trazas viven en páginas directas que siempre revelan su estado.",
+      "palette": ["#050505", "#F4F4F4", "#00D9E8", "#FFD400", "#E63B35"],
+      "materials": ["retícula de caracteres", "mosaicos de señal", "cabeceras de emisión"],
+      "viewport": "Una página 100 resume salud y riesgos; códigos 200, 300 y 400 abren chat, herramientas y protocolo.",
+      "risk": "Identifica muy bien el componente técnico, pero la retícula rígida limita tablas densas y pantallas pequeñas.",
+      "case": "Gran afinidad académica; menor claridad y comodidad para el operador de abastecimiento.",
+      "sketch": ".impeccable/sketches/challenger-teletext.png",
+      "hero": "https://impeccable.style/worlds/cards/broadcast-programming-teletext-service-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/broadcast-programming-teletext-service.webp"
+    },
+    {
+      "id": "challenger-industrial",
+      "label": "Etiquetado Industrial",
+      "kicker": "ALTERNATIVA",
+      "lineage": "etiquetas de almacén, bridas y señalización de peligro",
+      "thesis": "Cada zona nombra literalmente su función y los riesgos atraviesan el tablero como señalización física.",
+      "palette": ["#F6F5F0", "#111111", "#FF6A00", "#D9D9D4"],
+      "materials": ["placas de almacén", "bridas naranjas", "franjas diagonales"],
+      "viewport": "Un inventario tipográfico en blanco y negro queda atravesado por una diagonal de alerta que conecta chat, material y acción.",
+      "risk": "Tiene fuerte identificación industrial, pero puede sentirse editorial y competir con la lectura de datos.",
+      "case": "Buena afinidad con almacén; menor claridad integral que las tiras de operación.",
+      "sketch": ".impeccable/sketches/challenger-industrial.png",
+      "hero": "https://impeccable.style/worlds/cards/textiles-weave-drape-fashion-industrial-quote-grammar-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/textiles-weave-drape-fashion-industrial-quote-grammar.webp"
+    }
+  ],
+  "reroll": true,
+  "canon": true,
+  "canonCard": {
+    "label": "Dashboard empresarial convencional",
+    "thesis": "Sidebar, tarjetas KPI, tabla de riesgos y chat lateral ejecutados con máxima claridad.",
+    "palette": ["#F8FAFC", "#0F172A", "#059669", "#DC2626"],
+    "materials": ["paneles neutros", "tablas estándar", "gráficas utilitarias"],
+    "viewport": "Un dashboard familiar con resumen, tabla central y asistente a la derecha.",
+    "risk": "Es reconocible y eficiente, pero expresa poco del mecanismo MCP que hace único al proyecto.",
+    "sketch": ".impeccable/sketches/canon.png"
+  },
+  "steer": true
+}

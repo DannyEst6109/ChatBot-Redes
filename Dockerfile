@@ -8,6 +8,8 @@ COPY package.json package-lock.json tsconfig.json ./
 RUN npm ci
 COPY src ./src
 COPY test ./test
+COPY web ./web
+COPY vite.config.ts ./vite.config.ts
 RUN npm run build
 
 FROM node:22-slim
@@ -16,6 +18,7 @@ ENV NODE_ENV=production
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/dist-web ./dist-web
 COPY data ./data
 
 # Cloud Run sets PORT; the entry point falls back to 8080 otherwise.

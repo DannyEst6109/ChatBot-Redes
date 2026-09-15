@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-15T00:00:00.000Z",
+  "title": "Design System: Supply Control MCP",
+  "extensions": {
+    "colorMeta": {
+      "paper": { "role": "neutral", "displayName": "Papel de Cabina", "canonical": "#fbf9f4", "tonalRamp": ["#27251f", "#4a473f", "#6f6a60", "#948e82", "#b9b3a8", "#d9d4cb", "#eeeae3", "#fbf9f4"] },
+      "paper-deep": { "role": "neutral", "displayName": "Papel Profundo", "canonical": "#f2eee5", "tonalRamp": ["#26231d", "#48443b", "#6c675c", "#918b7e", "#b5afa3", "#d4cec3", "#e8e3da", "#f2eee5"] },
+      "carrier-ink": { "role": "primary", "displayName": "Tinta Carrier", "canonical": "#102747", "tonalRamp": ["#071321", "#102747", "#173b64", "#24517e", "#3f6994", "#6f8dad", "#aabccc", "#e8eff4"] },
+      "carrier-mid": { "role": "primary", "displayName": "Azul de Ruta", "canonical": "#24466d", "tonalRamp": ["#0a1624", "#132b45", "#24466d", "#38628d", "#557da5", "#7e9bb9", "#b3c4d3", "#eaf0f5"] },
+      "signal": { "role": "secondary", "displayName": "Rojo de Señal", "canonical": "#b51f35", "tonalRamp": ["#2b080e", "#550f1a", "#821728", "#b51f35", "#cd4558", "#df7987", "#efb3bb", "#fbecef"] },
+      "signal-bright": { "role": "secondary", "displayName": "Rojo de Acción", "canonical": "#d33c4e", "tonalRamp": ["#300a10", "#62131f", "#982233", "#d33c4e", "#e46270", "#ec8f99", "#f4bec4", "#fcedef"] },
+      "protocol-carbon": { "role": "tertiary", "displayName": "Carbón de Evidencia", "canonical": "#492b63", "tonalRamp": ["#180c22", "#2f193e", "#492b63", "#654581", "#81629a", "#a186b3", "#c8b6d1", "#f0eaf3"] },
+      "graphite": { "role": "neutral", "displayName": "Grafito Técnico", "canonical": "#626a73", "tonalRamp": ["#15181b", "#2d3237", "#474e55", "#626a73", "#7f8790", "#a1a7ad", "#c8ccd0", "#f1f2f3"] },
+      "rule": { "role": "neutral", "displayName": "Regla de Cupón", "canonical": "#d8d3ca", "tonalRamp": ["#211f1c", "#413e39", "#625e57", "#858078", "#aaa49b", "#c7c1b8", "#d8d3ca", "#f5f2ed"] },
+      "success": { "role": "tertiary", "displayName": "Verde Operativo", "canonical": "#1f6a50", "tonalRamp": ["#071a13", "#0e3427", "#174f3c", "#1f6a50", "#47856f", "#72a38f", "#a9c7bb", "#e9f2ee"] },
+      "warning": { "role": "tertiary", "displayName": "Ámbar de Advertencia", "canonical": "#a45b05", "tonalRamp": ["#281500", "#4f2b00", "#784300", "#a45b05", "#c47a28", "#da9f5a", "#ecc99d", "#fbf0df"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Magnitud Operativa", "purpose": "Cifras aisladas de cobertura y estado." },
+      "headline": { "displayName": "Manifiesto", "purpose": "Marca y encabezados principales." },
+      "title": { "displayName": "Título de Cupón", "purpose": "Etapas, paneles y resultados compactos." },
+      "body": { "displayName": "Lectura Operativa", "purpose": "Conversación, datos y acciones." },
+      "label": { "displayName": "Registro Técnico", "purpose": "Códigos, versiones, sellos y JSON-RPC." }
+    },
+    "shadows": [
+      { "name": "service-pulse", "value": "0 0 0 3px rgba(31, 106, 80, .13)", "purpose": "Refuerza únicamente el punto de servicio activo." }
+    ],
+    "motion": [
+      { "name": "ease-out", "value": "cubic-bezier(0.23, 1, 0.32, 1)", "purpose": "Salida rápida y asentamiento suave para estados causales." },
+      { "name": "state", "value": "180ms", "purpose": "Cambio de color en controles." },
+      { "name": "press", "value": "120ms", "purpose": "Confirmación táctil a escala .97." }
+    ],
+    "breakpoints": [
+      { "name": "compact-desktop", "value": "1120px" },
+      { "name": "stacked", "value": "860px" },
+      { "name": "mobile", "value": "560px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción prioritaria de análisis dentro del inspector.",
+      "html": "<button class=\"ds-primary-action\">EJECUTAR ANÁLISIS</button>",
+      "css": ".ds-primary-action { width: 100%; min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 4px; color: white; background: var(--signal, #b51f35); font: 600 13px 'IBM Plex Sans', sans-serif; transition: background-color 180ms var(--ease-out, cubic-bezier(.23,1,.32,1)), transform 120ms var(--ease-out, cubic-bezier(.23,1,.32,1)); } .ds-primary-action:hover { background: var(--signal-bright, #d33c4e); } .ds-primary-action:focus-visible { outline: 3px solid #2d73b9; outline-offset: 3px; } .ds-primary-action:active { transform: scale(.97); }"
+    },
+    {
+      "name": "Risk Selector",
+      "kind": "chip",
+      "refersTo": "risk-selector",
+      "description": "Cupón seleccionable para cambiar el material investigado.",
+      "html": "<button class=\"ds-risk-selector\"><span><strong>AZÚCAR REFINADA</strong><small>MAT-1004 · crítico</small></span></button>",
+      "css": ".ds-risk-selector { min-height: 48px; display: inline-flex; align-items: center; padding: 7px 11px; border: 1px solid var(--signal, #b51f35); border-radius: 5px; color: var(--signal, #b51f35); background: rgba(181,31,53,.05); font-family: 'IBM Plex Sans', sans-serif; } .ds-risk-selector span { display: grid; gap: 2px; text-align: left; } .ds-risk-selector strong { font-size: 11px; } .ds-risk-selector small { color: var(--graphite, #626a73); font-size: 9px; } .ds-risk-selector:hover { background: #f6f2ea; } .ds-risk-selector:focus-visible { outline: 3px solid #2d73b9; outline-offset: 3px; }"
+    },
+    {
+      "name": "Status Badge",
+      "kind": "chip",
+      "refersTo": "status-badge",
+      "description": "Estado compacto que combina icono, texto y tinta semántica.",
+      "html": "<span class=\"ds-status\"><svg viewBox=\"0 0 24 24\" width=\"13\" height=\"13\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M12 9v4\"/><path d=\"M12 17h.01\"/><path d=\"m10.3 2.9-8.7 15A2 2 0 0 0 3.3 21h17.4a2 2 0 0 0 1.7-3.1l-8.7-15a2 2 0 0 0-3.4 0Z\"/></svg> CRÍTICO</span>",
+      "css": ".ds-status { display: inline-flex; align-items: center; gap: 4px; padding: 4px 7px; border-radius: 999px; color: var(--signal, #b51f35); background: rgba(181,31,53,.09); font: 600 9px 'IBM Plex Sans', sans-serif; text-transform: uppercase; }"
+    },
+    {
+      "name": "Route Step",
+      "kind": "nav",
+      "description": "Segmento activo del itinerario causal.",
+      "html": "<div class=\"ds-route-step\"><span class=\"ds-route-node\">2</span><span><strong>MATERIAL</strong><small>Insumos y cobertura</small></span></div>",
+      "css": ".ds-route-step { display: grid; grid-template-columns: 22px 1fr; align-items: center; gap: 9px; padding: 15px 21px; color: white; background: var(--signal, #b51f35); border-bottom: 1px dashed rgba(255,255,255,.25); } .ds-route-node { display: grid; place-items: center; width: 21px; height: 21px; border: 2px solid currentColor; border-radius: 50%; color: var(--signal, #b51f35); background: white; font: 600 11px 'IBM Plex Mono', monospace; } .ds-route-step > span:last-child { display: grid; gap: 2px; } .ds-route-step strong { font: 600 17px 'Barlow Condensed', sans-serif; letter-spacing: .035em; } .ds-route-step small { color: rgba(255,255,255,.68); font: 400 10px/1.25 'IBM Plex Sans', sans-serif; }"
+    },
+    {
+      "name": "Ticket Chain",
+      "kind": "custom",
+      "description": "Secuencia firma de resultado operativo en cuatro cupones enlazados.",
+      "html": "<ol class=\"ds-ticket-chain\"><li><b>01</b><strong>RIESGO</strong><small>Crítico</small></li><li><b>02</b><strong>MATERIAL</strong><small>MAT-1004</small></li><li><b>03</b><strong>RECOMENDACIÓN</strong><small>Reposición</small></li><li><b>04</b><strong>EVIDENCIA</strong><small>tools/call</small></li></ol>",
+      "css": ".ds-ticket-chain { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); margin: 0; padding: 0; list-style: none; border: 1px solid var(--rule, #d8d3ca); border-radius: 6px; color: var(--ink, #102747); background: var(--paper, #fbf9f4); } .ds-ticket-chain li { min-width: 0; min-height: 92px; display: grid; align-content: center; gap: 4px; padding: 13px 12px; border-right: 1px dashed var(--graphite, #626a73); } .ds-ticket-chain li:last-child { border-right: 0; color: var(--carbon, #492b63); } .ds-ticket-chain b { color: var(--signal, #b51f35); font: 600 10px 'IBM Plex Mono', monospace; } .ds-ticket-chain strong { font: 600 15px 'Barlow Condensed', sans-serif; } .ds-ticket-chain small { overflow: hidden; color: var(--graphite, #626a73); font: 400 10px 'IBM Plex Sans', sans-serif; text-overflow: ellipsis; white-space: nowrap; }"
+    },
+    {
+      "name": "Protocol Drawer",
+      "kind": "custom",
+      "description": "Cajón carrier que hace inspeccionable una traza JSON-RPC real.",
+      "html": "<section class=\"ds-protocol\"><button><strong>EVIDENCIA MCP / JSON-RPC</strong><small>4 intercambios</small></button><pre>{ \"jsonrpc\": \"2.0\", \"method\": \"tools/call\" }</pre></section>",
+      "css": ".ds-protocol { color: white; background: var(--ink, #102747); } .ds-protocol button { width: 100%; min-height: 46px; display: flex; align-items: center; justify-content: space-between; padding: 0 22px; border: 0; color: white; background: var(--ink, #102747); } .ds-protocol button:hover { background: #18385f; } .ds-protocol button:focus-visible { outline: 3px solid #2d73b9; outline-offset: -3px; } .ds-protocol strong { font: 600 16px 'Barlow Condensed', sans-serif; letter-spacing: .05em; } .ds-protocol small { color: #b9c8d7; font: 400 10px 'IBM Plex Mono', monospace; } .ds-protocol pre { margin: 0; padding: 12px 17px; border-top: 1px solid rgba(255,255,255,.16); color: #bfe3d1; font: 400 9px/1.45 'IBM Plex Mono', monospace; white-space: pre-wrap; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Cartera de Ruta",
+    "overview": "Supply Control MCP convierte una investigación de abastecimiento en un itinerario verificable. Su mundo material es una cartera de cupones operativos: papel cálido, tinta azul carrier, señal roja, tinta carbón y costuras perforadas que explican cómo una pregunta avanza desde el riesgo hasta la evidencia MCP. La interfaz es densa pero ordenada, técnica sin parecer una terminal y evocadora sin imitar literalmente a una aerolínea. La jerarquía procede de franjas, columnas alineadas, numeración y cambios de tinta; no de tarjetas genéricas ni de efectos decorativos. La conversación conserva el foco humano y la traza hace visible la mecánica del protocolo.",
+    "keyCharacteristics": [
+      "Secuencia causal explícita: riesgo → material → recomendación → evidencia.",
+      "Superficies planas de papel unidas por reglas sólidas o perforadas.",
+      "Titulares compactos, lectura funcional y evidencia monoespaciada.",
+      "Estados comunicados con texto, forma e icono además del color.",
+      "Movimiento corto y causal, con una alternativa sin movimiento."
+    ],
+    "rules": [
+      { "name": "The Red Requires Language Rule", "body": "La señal roja nunca comunica prioridad por sí sola; el estado incluye siempre texto y, cuando corresponde, icono.", "section": "colors" },
+      { "name": "The Ink Has a Job Rule", "body": "Carrier estructura, señal prioriza, carbón explica el protocolo y verde confirma salud; no se intercambian como adornos.", "section": "colors" },
+      { "name": "The Three Voices Rule", "body": "Condensada para nombrar y medir, sans para leer y actuar, mono para identificar y auditar.", "section": "typography" },
+      { "name": "The Route Survives Rule", "body": "El orden causal nunca cambia al responder: la ruta precede a la conversación, que precede al inspector y a la evidencia.", "section": "layout" },
+      { "name": "The Flat Ticket Rule", "body": "Ningún panel gana importancia mediante una sombra; prioridad significa tinta, posición o sello.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do conservar el recorrido riesgo → material → recomendación → evidencia.",
+      "Do usar reglas, costuras y muescas para describir relaciones reales.",
+      "Do reservar IBM Plex Mono para códigos, versiones, sellos y JSON-RPC.",
+      "Do combinar cada estado con texto y forma o icono; sostener foco visible y `prefers-reduced-motion`.",
+      "Do animar causalidad con transform y opacity, usando 120–180ms y la curva de salida establecida."
+    ],
+    "donts": [
+      "Don't sustituir la secuencia por una cuadrícula de tarjetas KPI desconectadas.",
+      "Don't introducir gradientes, glassmorphism, grandes sombras o radios blandos de dashboard SaaS.",
+      "Don't repetir aviones, sellos o perforaciones cuando no expliquen estructura o estado.",
+      "Don't usar señal como decoración ni presentar los datos sintéticos como operación real.",
+      "Don't convertir la evidencia en estética de terminal: debe ser legible, semántica y navegable."
+    ]
+  }
+}

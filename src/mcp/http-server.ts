@@ -11,6 +11,8 @@ export interface HttpServerOptions {
   apiKey?: string
   /** Ruta del único endpoint MCP. */
   path?: string
+  /** Manejador opcional para la aplicación web y su API. */
+  fallback?: (req: IncomingMessage, res: ServerResponse) => Promise<boolean>
 }
 
 const DEFAULT_PATH = '/mcp'
@@ -48,6 +50,7 @@ export async function runHttpServer(
     }
 
     if (req.method !== 'POST' || req.url !== path) {
+      if (options.fallback && await options.fallback(req, res)) return
       res.writeHead(404, { 'content-type': 'application/json' })
       res.end(JSON.stringify(failure(null, -32601, 'Not found')))
       return

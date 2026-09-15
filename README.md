@@ -1,9 +1,9 @@
 # Supply Control MCP Chatbot
 
 Course project for CC3067 Networks. This repository contains a terminal chatbot,
-a manually implemented MCP client, and a local industrial MCP server for supply
-planning. See the complete installation, protocol, tool, and demonstration guide
-in the sections below.
+a responsive React operations console, a manually implemented MCP client, and an
+industrial MCP server for supply planning. See the complete installation,
+protocol, tool, and demonstration guide in the sections below.
 
 > Status: complete for local and remote execution. The authenticated server is
 > live on Render, and the repository includes a real filtered Wireshark capture
@@ -19,6 +19,8 @@ The chatbot can:
 - Log and display every MCP request and response.
 - Connect to the official Filesystem and Git MCP servers through configuration.
 - Use the custom local Supply Control MCP server included in this repository.
+- Open a responsive web console for guided risk analysis and inspect the real
+  JSON-RPC request and response behind every result.
 
 The MCP protocol layer is implemented manually with JSON-RPC 2.0. The project
 does not use an MCP SDK, FastMCP, or an Anthropic SDK.
@@ -53,6 +55,29 @@ runs. Set `ANTHROPIC_MODEL=claude-sonnet-5` for stronger multi-step tool
 reasoning at a higher cost per run.
 
 Never commit `.env` or real company information.
+
+## Run the web console
+
+Build and start the same HTTP process used by Render:
+
+```bash
+npm run build
+npm run mcp:supply:http
+```
+
+Then open `http://127.0.0.1:8080/`. The web console uses only the synthetic
+repository data and invokes the manual MCP server through a server-side bridge.
+`MCP_API_KEY` protects `/mcp`; it is never included in browser JavaScript or API
+responses. The guided web conversation is deterministic and does not incur LLM
+costs. The terminal chatbot remains the live Anthropic integration.
+
+For frontend iteration, keep the HTTP server on port 8080 and run:
+
+```bash
+npm run dev:web
+```
+
+Vite serves the interface locally and proxies `/api` to the HTTP process.
 
 ## Run the custom MCP server
 
@@ -276,6 +301,8 @@ The same tools and business rules are also exposed by the remote entry point:
 | Container entry point | `node dist/src/mcp/supply-server-http-entry.js` |
 | Health endpoint | `GET /healthz` |
 | MCP endpoint | `POST /mcp` |
+| Web console | `GET /` |
+| Browser BFF | `GET /api/bootstrap`, `POST /api/analyze`, `POST /api/chat` |
 | Authentication | `Authorization: Bearer <MCP_API_KEY>` |
 | Session header | `Mcp-Session-Id` returned by `initialize` and reused by the client |
 | Version header | `Mcp-Protocol-Version: 2025-11-25` after initialization |
@@ -289,6 +316,8 @@ The repository includes `render.yaml`. In the Render dashboard, create a new
 Blueprint, connect this repository, and approve the `supply-control-mcp` web
 service. Render builds the existing `Dockerfile`, assigns an HTTPS URL, checks
 `GET /healthz`, and generates `MCP_API_KEY` as a secret environment variable.
+The service root URL opens the web console; `/mcp` remains the authenticated
+remote MCP endpoint.
 
 After deployment, reveal `MCP_API_KEY` in the Render environment settings and
 copy it directly into the local `.env` file. Do not paste it into chat or commit
