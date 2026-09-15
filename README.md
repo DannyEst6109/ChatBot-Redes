@@ -5,9 +5,9 @@ a manually implemented MCP client, and a local industrial MCP server for supply
 planning. See the complete installation, protocol, tool, and demonstration guide
 in the sections below.
 
-> Status: implementation complete for local and remote execution. Cloud Run
-> deployment and a real Wireshark capture require the student's authenticated
-> cloud account and local packet-capture environment.
+> Status: implementation complete for local and remote execution. The remote
+> server is live on Render; only the real Wireshark capture requires the
+> student's local packet-capture environment.
 
 ## Project scope
 
@@ -295,7 +295,7 @@ copy it directly into the local `.env` file. Do not paste it into chat or commit
 it. Configure the generated service URL as follows:
 
 ```text
-SUPPLY_REMOTE_URL=https://<render-service>.onrender.com/mcp
+SUPPLY_REMOTE_URL=https://supply-control-mcp.onrender.com/mcp
 SUPPLY_REMOTE_API_KEY=<same value as MCP_API_KEY in Render>
 ```
 

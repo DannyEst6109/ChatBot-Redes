@@ -78,7 +78,10 @@ que un paquete contiene un metodo concreto si el payload sigue cifrado.
 
 ### Evidencia a completar despues de la captura real
 
-- URL del servicio: `[PENDIENTE DE DESPLIEGUE AUTENTICADO]`
+- URL del servicio: `https://supply-control-mcp.onrender.com/mcp`
+- Verificacion remota: `initialize` HTTP 200, sesion MCP creada,
+  `notifications/initialized` HTTP 202, `tools/list` HTTP 200 con cinco
+  herramientas y `tools/call(get_supply_data_status)` HTTP 200 sin error.
 - IP local: `[PENDIENTE DE CAPTURA]`
 - IP remota: `[PENDIENTE DE CAPTURA]`
 - Tramas DNS: `[PENDIENTE DE CAPTURA]`
