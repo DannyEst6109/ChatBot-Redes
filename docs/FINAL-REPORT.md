@@ -58,23 +58,37 @@ Durante la captura deben identificarse, en este orden:
 | Solicitud | `tools/call` | Si | Invoca una herramienta con argumentos |
 | Respuesta | `result.content` | Mismo `id` | Devuelve texto y contenido estructurado |
 
-Con HTTPS, Wireshark muestra TLS cifrado y no puede leer el JSON sin claves de
-sesion. Para demostrar el contenido de aplicacion se debe correlacionar la
-captura con `logs/mcp-interactions.jsonl`, o habilitar `SSLKEYLOGFILE` en un
-cliente compatible y configurar ese archivo en Wireshark. No se debe afirmar
-que un paquete contiene un metodo concreto si el payload sigue cifrado.
+Con HTTPS, Wireshark muestra TLS cifrado y no puede leer el JSON sin las claves
+de sesion. Por eso la captura se realiza con registro de claves habilitado: el
+cliente corre bajo `--tls-keylog`, Wireshark descifra el flujo y los mensajes
+JSON-RPC quedan visibles trama por trama sobre la conexion real con Render. No
+se debe afirmar que un paquete contiene un metodo concreto si el payload sigue
+cifrado y no se ha cargado el archivo de claves.
 
 ### Procedimiento reproducible de captura
 
-1. Ejecutar `npm run demo:remote` una vez para calentar el servicio.
+1. Ejecutar `npm run demo:remote` una vez para despertar el servicio de Render.
 2. Abrir Wireshark y capturar en la interfaz que tiene la ruta hacia Internet.
 3. Aplicar el filtro `tcp.port == 443` y, si se conoce la IP, agregar
    `ip.addr == <IP_REMOTA>`.
-4. Ejecutar nuevamente `npm run demo:remote`.
+4. Ejecutar `npm run capture:remote`. Es el mismo cliente y el mismo servidor
+   remoto que `demo:remote`, pero Node escribe los secretos de sesion TLS en
+   `tmp/tls-keys.log`.
 5. Detener y guardar la captura como `evidence/remote-mcp.pcapng`.
-6. Exportar una imagen con DNS, establecimiento TCP, TLS y cierre visibles.
-7. Anotar abajo las direcciones y numeros de trama observados. No usar valores
+6. En Wireshark, abrir Preferences > Protocols > TLS y fijar
+   "(Pre)-Master-Secret log filename" en `tmp/tls-keys.log`. El panel pasa a
+   mostrar HTTP2/HTTP y el cuerpo JSON-RPC de cada mensaje.
+7. Clasificar con el filtro `json-rpc || http` y anotar, por numero de trama,
+   cual mensaje es de sincronizacion, cual es solicitud y cual es respuesta.
+8. Exportar una imagen con DNS, establecimiento TCP, TLS y los mensajes
+   JSON-RPC descifrados visibles.
+9. Anotar abajo las direcciones y numeros de trama observados. No usar valores
    de ejemplo como evidencia final.
+
+El archivo de claves descifra unicamente esa captura, pero el trafico descifrado
+incluye la cabecera `Authorization: Bearer <MCP_API_KEY>`. No publicar
+`tmp/tls-keys.log` ni una captura descifrada sin rotar antes esa clave en
+Render.
 
 ### Evidencia de la captura real
 

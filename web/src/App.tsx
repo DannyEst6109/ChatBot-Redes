@@ -8,6 +8,7 @@ import {
   CircleDot,
   Cloud,
   Code2,
+  Copy,
   Database,
   FileCheck2,
   LoaderCircle,
@@ -50,6 +51,8 @@ const routeSteps = [
   { label: 'Evidencia', shortLabel: 'Evidencia', detail: 'Traza y resultado', icon: ShieldCheck },
 ] as const
 
+type RouteState = 'pending' | 'running' | 'done'
+
 const suggestions = [
   '¿Cuál es el riesgo más urgente?',
   'Explícame la recomendación',
@@ -88,8 +91,7 @@ export function App() {
   const selected = analysis?.selected ?? data?.selected
   const recommendation = analysis?.recommendation ?? data?.recommendation
   const traces = analysis?.traces ?? data?.traces ?? []
-  const latestTrace = traces.at(-1)
-  const activeStep = working ? 2 : traces.length > 0 ? 3 : 0
+  const states = routeStates(working, (data?.risks.risks.length ?? 0) > 0, Boolean(selected), Boolean(recommendation), traces.length)
   const visibleRisks = data?.risks.risks.filter((risk) => {
     const query = search.trim().toLocaleLowerCase('es')
     return query === '' || `${risk.description} ${risk.materialCode} ${risk.center}`.toLocaleLowerCase('es').includes(query)
@@ -149,7 +151,7 @@ export function App() {
     <div className="app-shell">
       <Header data={data} search={search} onSearch={setSearch} />
       <main className="workspace">
-        <RouteRail activeStep={activeStep} />
+        <RouteRail states={states} />
         <Conversation
           messages={messages}
           risks={visibleRisks}
@@ -169,12 +171,7 @@ export function App() {
           onAnalyze={() => void selectRisk(toRiskReference(selected))}
         />
       </main>
-      <ProtocolDrawer
-        open={protocolOpen}
-        onToggle={() => setProtocolOpen((value) => !value)}
-        trace={latestTrace}
-        traceCount={traces.length}
-      />
+      <ProtocolDrawer open={protocolOpen} onToggle={() => setProtocolOpen((value) => !value)} traces={traces} />
     </div>
   )
 }
@@ -215,16 +212,22 @@ function Header({ data, search, onSearch }: { data: BootstrapPayload; search: st
   )
 }
 
-function RouteRail({ activeStep }: { activeStep: number }) {
+function RouteRail({ states }: { states: readonly RouteState[] }) {
+  const stateWord: Record<RouteState, string> = { pending: 'pendiente', running: 'en curso', done: 'completada' }
   return (
     <nav className="route-rail" aria-label="Etapas del análisis">
       <div className="route-title"><Waypoints size={27} /><span>Cartera<br />de ruta</span></div>
       <ol>
         {routeSteps.map((step, index) => {
           const Icon = step.icon
-          const state = index < activeStep ? 'done' : index === activeStep ? 'active' : 'pending'
+          const state = states[index] ?? 'pending'
           return (
-            <li key={step.label} className={state} aria-label={`${step.label}: ${step.detail}`} aria-current={state === 'active' ? 'step' : undefined}>
+            <li
+              key={step.label}
+              className={state}
+              aria-label={`${step.label}, ${step.detail}: etapa ${stateWord[state]}`}
+              aria-current={state === 'running' ? 'step' : undefined}
+            >
               <span className="route-node">{state === 'done' ? <Check size={14} /> : index + 1}</span>
               <Icon className="route-icon" size={22} aria-hidden="true" />
               <span className="route-copy"><strong data-short={step.shortLabel}><span>{step.label}</span></strong><small>{step.detail}</small></span>
@@ -235,6 +238,21 @@ function RouteRail({ activeStep }: { activeStep: number }) {
       <div className="route-foot"><span>JSON-RPC 2.0</span><span>MCP 2025-11-25</span></div>
     </nav>
   )
+}
+
+/**
+ * Las etapas describen lo que realmente se ha obtenido, no una animación: una
+ * etapa se completa cuando su dato existe y vuelve a "en curso" mientras el
+ * servidor la recalcula.
+ */
+function routeStates(working: boolean, hasRisks: boolean, hasMaterial: boolean, hasRecommendation: boolean, traceCount: number): RouteState[] {
+  if (working) return ['done', 'running', 'running', 'running']
+  return [
+    hasRisks ? 'done' : 'pending',
+    hasMaterial ? 'done' : 'pending',
+    hasRecommendation ? 'done' : 'pending',
+    traceCount > 0 ? 'done' : 'pending',
+  ]
 }
 
 interface ConversationProps {
@@ -251,6 +269,26 @@ interface ConversationProps {
 }
 
 function Conversation(props: ConversationProps) {
+  const streamRef = useRef<HTMLDivElement>(null)
+  const composerRef = useRef<HTMLInputElement>(null)
+
+  // Una respuesta que aparece fuera de la vista se lee como si no hubiera
+  // llegado; el desplazamiento la sigue y respeta la preferencia del sistema.
+  useEffect(() => {
+    const stream = streamRef.current
+    if (!stream) return
+    const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    stream.scrollTo({ top: stream.scrollHeight, behavior: smooth ? 'smooth' : 'auto' })
+  }, [props.messages, props.working])
+
+  // Al terminar la consulta el cursor vuelve al campo para poder encadenar
+  // preguntas sin tocar el ratón.
+  const wasWorking = useRef(props.working)
+  useEffect(() => {
+    if (wasWorking.current && !props.working) composerRef.current?.focus()
+    wasWorking.current = props.working
+  }, [props.working])
+
   return (
     <section className="conversation" id="conversation" aria-labelledby="conversation-title">
       <header className="section-header">
@@ -274,7 +312,7 @@ function Conversation(props: ConversationProps) {
         ))}
       </div>
 
-      <div className="message-stream" aria-live="polite" aria-busy={props.working}>
+      <div className="message-stream" ref={streamRef} role="log" aria-live="polite" aria-busy={props.working}>
         <div className="message operator-message"><span className="avatar">OP</span><p>Analiza {props.selected.material.description} y muéstrame una recomendación verificable.</p></div>
         {props.messages.map((message) => (
           <div key={message.id} className={`message ${message.role === 'operator' ? 'operator-message' : 'assistant-message'}`}>
@@ -294,6 +332,7 @@ function Conversation(props: ConversationProps) {
         <label className="sr-only" htmlFor="operator-question">Consulta sobre abastecimiento</label>
         <input
           id="operator-question"
+          ref={composerRef}
           value={props.input}
           onChange={(event: ChangeEvent<HTMLInputElement>) => props.onInput(event.target.value)}
           placeholder="Pregunta por inventario, riesgo o herramientas MCP…"
@@ -378,29 +417,52 @@ function Inspector({ selected, recommendation, working, onAnalyze }: { selected:
   )
 }
 
-function ProtocolDrawer({ open, onToggle, trace, traceCount }: { open: boolean; onToggle(): void; trace?: ProtocolTrace; traceCount: number }) {
+function ProtocolDrawer({ open, onToggle, traces }: { open: boolean; onToggle(): void; traces: ProtocolTrace[] }) {
+  const [selectedId, setSelectedId] = useState<number | null>(null)
   const onRender = window.location.hostname.endsWith('onrender.com')
+
+  // Cada operación reemplaza el lote de trazas. Al llegar uno nuevo se vuelve a
+  // la última, que es la que responde la pregunta recién hecha.
+  useEffect(() => setSelectedId(null), [traces])
+
+  const trace = traces.find((entry) => entry.id === selectedId) ?? traces.at(-1)
+  const totalMs = Math.round(traces.reduce((sum, entry) => sum + entry.durationMs, 0) * 100) / 100
+
   return (
     <section className={`protocol-drawer ${open ? 'open' : ''}`} aria-labelledby="protocol-title">
       <button className="protocol-handle" onClick={onToggle} aria-expanded={open}>
-        <span><Code2 size={18} /><strong id="protocol-title">Protocolo MCP</strong><small>{trace ? `${trace.method} · ${trace.durationMs} ms` : 'Sin traza'}</small></span>
-        <span className="service-overview" title={onRender ? 'Los servicios gratuitos de Render pueden requerir un arranque en frío.' : 'Vista local; Render se comprobará después del despliegue.'}>
-          <span><Server size={13} /> BFF local</span>
-          <span><Cloud size={13} /> {onRender ? 'Render activo' : 'Render al desplegar'}</span>
-          <span>{trace?.durationMs ?? 0} ms</span>
-          <span>{traceToolName(trace)} · {traceCount}</span>
+        <span><Code2 size={18} /><strong id="protocol-title">Protocolo MCP</strong><small>{trace ? `${traceLabel(trace)} · ${trace.durationMs} ms` : 'Sin traza'}</small></span>
+        <span className="service-overview">
+          <span><Server size={13} /> {onRender ? 'Render' : 'Servidor local'}</span>
+          <span><Cloud size={13} /> {onRender ? 'HTTPS cifrado' : 'HTTP en claro'}</span>
+          <span>{totalMs} ms</span>
+          <span>{traces.length} {traces.length === 1 ? 'mensaje' : 'mensajes'}</span>
         </span>
         {open ? <X size={18} /> : <ChevronRight size={18} />}
       </button>
       {open && (
         <div className="protocol-content">
+          <div className="trace-index">
+            <h3>Intercambio</h3>
+            <ol>
+              {traces.length === 0 && <li className="trace-empty">Aún no se ha ejecutado ninguna llamada.</li>}
+              {traces.map((entry) => (
+                <li key={entry.id}>
+                  <button
+                    className={entry.id === trace?.id ? 'selected' : ''}
+                    onClick={() => setSelectedId(entry.id)}
+                    aria-current={entry.id === trace?.id ? 'true' : undefined}
+                  >
+                    <span className="trace-id">{String(entry.id).padStart(2, '0')}</span>
+                    <span className="trace-name">{traceLabel(entry)}</span>
+                    <span className="trace-ms">{entry.durationMs} ms</span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          </div>
           <ProtocolBlock title="Solicitud JSON-RPC" value={trace?.request} />
           <ProtocolBlock title="Respuesta JSON-RPC" value={trace?.response} />
-          <div className="protocol-summary">
-            <span className="stamp-icon"><FileCheck2 size={25} /></span>
-            <strong>EVIDENCE<br />ON ROUTE</strong>
-            <p>Traza generada por el servidor MCP manual. En HTTPS viaja cifrada; Render gratuito puede requerir arranque en frío.</p>
-          </div>
         </div>
       )}
     </section>
@@ -408,7 +470,38 @@ function ProtocolDrawer({ open, onToggle, trace, traceCount }: { open: boolean; 
 }
 
 function ProtocolBlock({ title, value }: { title: string; value: unknown }) {
-  return <div className="protocol-block"><h3>{title}</h3><pre>{value ? JSON.stringify(value, null, 2) : 'Aún no hay datos.'}</pre></div>
+  const [copied, setCopied] = useState(false)
+  const serialized = value ? JSON.stringify(value, null, 2) : ''
+
+  async function copy(): Promise<void> {
+    if (!serialized) return
+    try {
+      await navigator.clipboard.writeText(serialized)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1_800)
+    } catch {
+      setCopied(false)
+    }
+  }
+
+  return (
+    <div className="protocol-block">
+      <h3>
+        {title}
+        <button onClick={() => void copy()} disabled={!serialized} aria-label={`Copiar ${title.toLocaleLowerCase('es')}`}>
+          {copied ? <><Check size={12} /> Copiado</> : <><Copy size={12} /> Copiar</>}
+        </button>
+      </h3>
+      <pre tabIndex={0}>{serialized || 'Aún no hay datos.'}</pre>
+    </div>
+  )
+}
+
+/** Un `tools/call` se identifica por la herramienta, no por el método genérico. */
+function traceLabel(trace: ProtocolTrace): string {
+  const params = trace.request.params
+  if (typeof params === 'object' && params !== null && 'name' in params && typeof params.name === 'string') return params.name
+  return trace.method
 }
 
 function traceToolName(trace?: ProtocolTrace): string {

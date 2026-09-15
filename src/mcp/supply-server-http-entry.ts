@@ -33,7 +33,17 @@ if (!apiKey) {
   console.error('[supply-mcp-http] Warning: MCP_API_KEY is not set. The endpoint will accept unauthenticated requests.')
 }
 
-await runHttpServer(
+const server = await runHttpServer(
   createSession,
   { port, ...(apiKey ? { apiKey } : {}), fallback: webHandler },
 )
+
+// Render y Cloud Run envían SIGTERM antes de reemplazar la instancia. Sin este
+// manejador el proceso muere de golpe y la solicitud en curso se corta.
+for (const signal of ['SIGTERM', 'SIGINT'] as const) {
+  process.once(signal, () => {
+    console.error(`[supply-mcp-http] ${signal} received; closing the listener.`)
+    server.close(() => process.exit(0))
+    setTimeout(() => process.exit(0), 10_000).unref()
+  })
+}

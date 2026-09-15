@@ -57,7 +57,7 @@ Wireshark evidence. A responsive layout must remain usable on smaller screens.
 ## Evidence on Hand
 
 - Real remote deployment: `https://supply-control-mcp.onrender.com/mcp`.
-- Verified test suite with 58 passing tests.
+- Verified test suite with 64 passing tests.
 - Real filtered capture: `evidence/remote-mcp.pcapng`.
 - Capture analysis figure: `evidence/remote-mcp-analysis.png`.
 - Final report and exact frame mapping: `docs/FINAL-REPORT.md`.

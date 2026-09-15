@@ -71,6 +71,21 @@ repository data and invokes the manual MCP server through a server-side bridge.
 responses. The guided web conversation is deterministic and does not incur LLM
 costs. The terminal chatbot remains the live Anthropic integration.
 
+### Reading the protocol evidence
+
+The drawer at the foot of the console lists every JSON-RPC message the answer
+on screen was built from, not only the last one. Each entry names the tool
+rather than the generic `tools/call`, carries its own duration, and opens the
+complete request and response envelopes; a copy control puts either envelope on
+the clipboard for the report. The header summarises the whole exchange: how
+many messages it took, the total time, and whether the traffic reaching the
+server was plain HTTP or the HTTPS the Wireshark capture records.
+
+The itinerary on the left states what the console actually holds. A stage is
+complete when its data exists — risks listed, material resolved, recommendation
+calculated, trace captured — and returns to "en curso" while the server
+recalculates it, so the rail never claims progress the session has not made.
+
 For frontend iteration, keep the HTTP server on port 8080 and run:
 
 ```bash
@@ -301,12 +316,20 @@ The same tools and business rules are also exposed by the remote entry point:
 | Container entry point | `node dist/src/mcp/supply-server-http-entry.js` |
 | Health endpoint | `GET /healthz` |
 | MCP endpoint | `POST /mcp` |
+| Session termination | `DELETE /mcp` with `Mcp-Session-Id`; answers `204`, or `404` if unknown |
 | Web console | `GET /` |
 | Browser BFF | `GET /api/bootstrap`, `POST /api/analyze`, `POST /api/chat` |
-| Authentication | `Authorization: Bearer <MCP_API_KEY>` |
+| Authentication | `Authorization: Bearer <MCP_API_KEY>`, compared in constant time |
 | Session header | `Mcp-Session-Id` returned by `initialize` and reused by the client |
 | Version header | `Mcp-Protocol-Version: 2025-11-25` after initialization |
 | Request/response encoding | UTF-8 `application/json` JSON-RPC 2.0 |
+
+Because the endpoint is exposed to the public internet, the server bounds the
+state a caller can create. A session expires after 30 minutes without traffic,
+at most 256 sessions stay open at once (`503` with `Retry-After` beyond that),
+and a request body over 256 KiB is answered `413` instead of being buffered.
+`SIGTERM` and `SIGINT` close the listener before the process exits, so the
+request in flight during a Render redeploy is not cut mid-response.
 
 ## Deploy and use the remote server
 
@@ -328,8 +351,12 @@ SUPPLY_REMOTE_URL=https://supply-control-mcp.onrender.com/mcp
 SUPPLY_REMOTE_API_KEY=<same value as MCP_API_KEY in Render>
 ```
 
-Free Render services can sleep after inactivity. Open `/healthz` shortly before
-the demonstration and wait for `ok` before running `npm run demo:remote`.
+Free Render services can sleep after inactivity, and the first request after a
+sleep can take close to a minute. `npm run demo:remote` therefore polls
+`/healthz` until the service answers before it starts measuring the protocol,
+and allows 60 seconds per MCP request. The demonstration no longer depends on
+warming the service by hand, although opening `/healthz` beforehand still makes
+the timings in the live run representative.
 
 ### Google Cloud Run (alternative)
 
@@ -463,6 +490,28 @@ Then run `npm run chatbot`, ask the two linked Alan Turing questions from
 After deployment, run `npm run demo:remote` and follow the capture procedure in
 `docs/FINAL-REPORT.md`. The automated suite includes an authenticated HTTP
 end-to-end test of initialization, session reuse, discovery, and tool execution.
+
+### Capture readable JSON-RPC over the remote HTTPS connection
+
+Requirement 7 asks which captured messages are synchronization, which are
+requests, and which are responses. Over HTTPS those bodies are encrypted, so the
+capture is taken with TLS session-key logging enabled:
+
+```bash
+npm run capture:remote
+```
+
+This runs the same client against the same Render service as `demo:remote`, and
+Node additionally writes the TLS 1.3 session secrets to `tmp/tls-keys.log`. In
+Wireshark, set Preferences > Protocols > TLS > "(Pre)-Master-Secret log
+filename" to that file. Wireshark then decrypts the stream and shows each
+JSON-RPC envelope in the packet detail, so `initialize`,
+`notifications/initialized`, `tools/list`, and `tools/call` can be classified by
+frame number rather than inferred.
+
+The decrypted traffic contains the `Authorization: Bearer <MCP_API_KEY>` header.
+`tmp/` is ignored by Git, but do not publish the key log or a decrypted capture
+without rotating `MCP_API_KEY` in Render first.
 
 ## Repository and academic integrity
 
