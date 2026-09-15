@@ -76,19 +76,21 @@ que un paquete contiene un metodo concreto si el payload sigue cifrado.
 7. Anotar abajo las direcciones y numeros de trama observados. No usar valores
    de ejemplo como evidencia final.
 
-### Evidencia a completar despues de la captura real
+### Evidencia de la captura real
 
 - URL del servicio: `https://supply-control-mcp.onrender.com/mcp`
 - Verificacion remota: `initialize` HTTP 200, sesion MCP creada,
   `notifications/initialized` HTTP 202, `tools/list` HTTP 200 con cinco
   herramientas y `tools/call(get_supply_data_status)` HTTP 200 sin error.
-- IP local: `[PENDIENTE DE CAPTURA]`
-- IP remota: `[PENDIENTE DE CAPTURA]`
-- Tramas DNS: `[PENDIENTE DE CAPTURA]`
-- Tramas TCP SYN/SYN-ACK/ACK: `[PENDIENTE DE CAPTURA]`
-- Tramas TLS ClientHello/ServerHello: `[PENDIENTE DE CAPTURA]`
-- Tramas de datos cifrados asociadas a la demostracion: `[PENDIENTE DE CAPTURA]`
-- Archivo y figura de evidencia: `[PENDIENTE DE CAPTURA]`
+- IP local: `192.168.0.18` (interfaz Wi-Fi)
+- IP remota observada: `216.24.57.7`, puerto TCP `443`
+- Tramas DNS: consulta y respuesta `43-44`
+- Tramas TCP SYN/SYN-ACK/ACK: `45-47`
+- Tramas TLS ClientHello/ServerHello: `49` y `51`
+- Tramas de datos cifrados asociadas a la demostracion: `73-101`
+- Cierre TCP completo de una conexion HTTPS: `22`, `24` y `25`
+- Archivo: `evidence/remote-mcp.pcapng` (102 paquetes)
+- Figura: `evidence/remote-mcp-analysis.png`
 
 ## 5. Capas de red
 
@@ -97,13 +99,13 @@ que un paquete contiene un metodo concreto si el payload sigue cifrado.
 En la red local, la trama transporta el paquete IP hacia el siguiente salto. En
 Ethernet contiene direcciones MAC de origen y destino y un EtherType para IPv4
 o IPv6. La MAC remota observada normalmente pertenece al gateway local, no al
-servidor de Cloud Run. En Wi-Fi existen cabeceras 802.11 equivalentes; el medio
-concreto debe registrarse a partir de la interfaz capturada.
+servidor de Render. La captura se realizo sobre la interfaz Wi-Fi activa; Npcap
+entrego las tramas observables de esa interfaz a Wireshark.
 
 ### Red
 
 IP proporciona direccionamiento y encaminamiento entre el cliente y el
-frontend de Google Cloud. El paquete contiene direcciones IP, limite de saltos
+frontend de Render. El paquete contiene direcciones IP, limite de saltos
 y el identificador del protocolo de transporte. DNS resuelve el nombre HTTPS a
 una direccion alcanzable. La IP observada puede pertenecer a infraestructura
 compartida y cambiar entre ejecuciones.
