@@ -5,9 +5,9 @@ a manually implemented MCP client, and a local industrial MCP server for supply
 planning. See the complete installation, protocol, tool, and demonstration guide
 in the sections below.
 
-> Status: implementation complete for local and remote execution. The remote
-> server is live on Render; only the real Wireshark capture requires the
-> student's local packet-capture environment.
+> Status: complete for local and remote execution. The authenticated server is
+> live on Render, and the repository includes a real filtered Wireshark capture
+> plus a presentation-ready analysis figure.
 
 ## Project scope
 

@@ -1,4 +1,4 @@
-# Demostración en vivo - Entrega 1
+# Demostración en vivo - Entrega final
 
 Documento de apoyo para seguir la prueba frente al profesor.
 
@@ -16,12 +16,14 @@ En la primera ventana verificar el proyecto:
 
 ```powershell
 npm run check
+npm run demo:remote
 npm run demo:scenario
 ```
 
 Resultados que deben aparecer:
 
 - 58 pruebas aprobadas.
+- Servidor remoto de Render accesible y autenticado.
 - Filesystem y Git conectados.
 - README creado en `demo-workspace`.
 - Archivo agregado, revisado y comprometido mediante MCP.
@@ -43,12 +45,14 @@ npm run chatbot
 Verificar en el encabezado:
 
 ```text
-supply · filesystem · git
+supply · supply-remote · filesystem · git
 ```
 
 Decir:
 
-> El anfitrión inicia tres servidores locales y realiza el ciclo de inicialización MCP. El cliente fue implementado manualmente y se comunica mediante JSON-RPC 2.0 sobre stdio.
+> El anfitrión inicia tres servidores locales y conecta el mismo servidor
+> industrial desplegado en Render. El cliente fue implementado manualmente y
+> usa JSON-RPC 2.0 sobre stdio local y HTTPS remoto.
 
 ## 2. Mostrar servidores y herramientas
 
@@ -61,6 +65,7 @@ Escribir:
 Verificar:
 
 - `supply`
+- `supply-remote`
 - `filesystem`
 - `git`
 
@@ -73,8 +78,10 @@ Escribir:
 Verificar aproximadamente:
 
 - Supply: 5 herramientas.
+- Supply remoto: las mismas 5 herramientas.
 - Filesystem: 14 herramientas.
 - Git: 12 herramientas.
+- Total observado: 36 herramientas.
 
 Decir:
 
@@ -234,7 +241,29 @@ Decir:
 
 > La terminal puede resumir el tráfico, pero el archivo JSONL siempre conserva las solicitudes y respuestas completas.
 
-## 9. Finalizar el chatbot
+## 9. Mostrar la evidencia de Wireshark
+
+Abrir `evidence/remote-mcp.pcapng` y aplicar:
+
+```text
+dns.qry.name contains "supply-control-mcp.onrender.com" || ip.addr == 216.24.57.7
+```
+
+Señalar:
+
+- DNS en las tramas 43-44.
+- Saludo TCP en las tramas 45-47.
+- ClientHello y ServerHello en las tramas 49 y 51.
+- Datos MCP cifrados en las tramas 73-101.
+- Cierre TCP en las tramas 22, 24 y 25.
+
+Mostrar también `evidence/remote-mcp-analysis.png` y decir:
+
+> Wireshark demuestra DNS, TCP y TLS. HTTPS protege el Bearer token y los
+> cuerpos JSON-RPC, por lo que la captura los identifica honestamente como
+> datos de aplicación cifrados y se correlaciona con el log MCP.
+
+## 10. Finalizar el chatbot
 
 ```text
 /exit
@@ -244,7 +273,7 @@ Decir:
 
 > Al salir, el administrador cierra los clientes y termina los procesos de los servidores.
 
-## 10. Demostrar Filesystem y Git
+## 11. Demostrar Filesystem y Git
 
 En la primera terminal volver a ejecutar, si el tiempo lo permite:
 
@@ -273,7 +302,11 @@ Si preguntan por `git init`:
 
 ## Cierre
 
-> La primera entrega demuestra conexión con un LLM, memoria de sesión, registro completo del protocolo, dos servidores oficiales y un servidor industrial propio. Los cálculos son determinísticos y todos los datos son sintéticos. El transporte remoto, la nube y Wireshark corresponden a la segunda parte.
+> La entrega final demuestra conexión con un LLM, memoria de sesión, registro
+> completo del protocolo, dos servidores oficiales y un servidor industrial
+> propio ejecutado localmente y en Render. La captura real documenta DNS, TCP,
+> TLS y el tráfico MCP cifrado. Los cálculos son determinísticos y todos los
+> datos son sintéticos.
 
 ## Contingencias
 
@@ -319,9 +352,11 @@ Mostrar únicamente:
 ## Lista rápida antes de comenzar
 
 - [ ] API configurada sin mostrar `.env`.
-- [ ] Tres servidores conectados.
+- [ ] Cuatro servidores conectados y 36 herramientas descubiertas.
 - [ ] 58 pruebas aprobadas.
+- [ ] `demo:remote` ejecutado correctamente.
 - [ ] `demo:scenario` ejecutado una vez.
+- [ ] Captura `evidence/remote-mcp.pcapng` abierta en Wireshark.
 - [ ] Terminal con letra grande.
 - [ ] Sin ventanas ni información laboral visible.
 - [ ] Primera terminal abierta como respaldo.
