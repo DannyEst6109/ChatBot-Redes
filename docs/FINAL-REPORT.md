@@ -39,9 +39,11 @@ permite verificar la instancia sin abrir una
 sesion MCP.
 
 El `Dockerfile` construye TypeScript en una etapa y ejecuta solamente los
-artefactos y datos necesarios en una imagen Node.js 22. El script
-`scripts/deploy-cloud-run.ps1` habilita las APIs necesarias y despliega el
-servicio con una sola instancia maxima, pues las sesiones viven en memoria.
+artefactos y datos necesarios en una imagen Node.js 22. `render.yaml` describe
+el servicio remoto, su health check y la generacion de la credencial. Como
+alternativa, `scripts/deploy-cloud-run.ps1` despliega la misma imagen en Google
+Cloud Run. Ambos flujos usan una sola instancia, pues las sesiones viven en
+memoria.
 
 ## 4. Analisis de mensajes JSON-RPC
 

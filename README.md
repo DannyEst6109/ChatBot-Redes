@@ -283,6 +283,27 @@ The same tools and business rules are also exposed by the remote entry point:
 
 ## Deploy and use the remote server
 
+### Render (recommended for the course demo)
+
+The repository includes `render.yaml`. In the Render dashboard, create a new
+Blueprint, connect this repository, and approve the `supply-control-mcp` web
+service. Render builds the existing `Dockerfile`, assigns an HTTPS URL, checks
+`GET /healthz`, and generates `MCP_API_KEY` as a secret environment variable.
+
+After deployment, reveal `MCP_API_KEY` in the Render environment settings and
+copy it directly into the local `.env` file. Do not paste it into chat or commit
+it. Configure the generated service URL as follows:
+
+```text
+SUPPLY_REMOTE_URL=https://<render-service>.onrender.com/mcp
+SUPPLY_REMOTE_API_KEY=<same value as MCP_API_KEY in Render>
+```
+
+Free Render services can sleep after inactivity. Open `/healthz` shortly before
+the demonstration and wait for `ok` before running `npm run demo:remote`.
+
+### Google Cloud Run (alternative)
+
 Authenticate the Google Cloud CLI, select a billing-enabled project, and set a
 random API key without writing it to the repository:
 
@@ -310,8 +331,9 @@ npm run chatbot
 ```
 
 `/servers` must show both `supply` over `stdio` and `supply-remote` over `http`.
-The deployment is intentionally limited to one Cloud Run instance because MCP
-session state is kept in memory for this academic implementation.
+The Cloud Run deployment is intentionally limited to one instance, and Render's
+free service also uses one instance, because MCP session state is kept in
+memory for this academic implementation.
 
 The server accepts `initialize`, `notifications/initialized`, `ping`,
 `tools/list`, and `tools/call`. A successful tool call returns both a text

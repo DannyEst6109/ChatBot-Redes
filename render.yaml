@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: supply-control-mcp
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
+    envVars:
+      - key: MCP_API_KEY
+        generateValue: true
