@@ -5,8 +5,9 @@ a manually implemented MCP client, and a local industrial MCP server for supply
 planning. See the complete installation, protocol, tool, and demonstration guide
 in the sections below.
 
-> Status: Part 1 implementation. Remote MCP transport, cloud deployment, and
-> Wireshark analysis are intentionally outside this milestone.
+> Status: implementation complete for local and remote execution. Cloud Run
+> deployment and a real Wireshark capture require the student's authenticated
+> cloud account and local packet-capture environment.
 
 ## Project scope
 
@@ -28,6 +29,8 @@ does not use an MCP SDK, FastMCP, or an Anthropic SDK.
 - npm 10 or newer.
 - An Anthropic API key for the live chatbot.
 - `uvx` for the official Git MCP server and the complete Part 1 scenario.
+- Google Cloud CLI for the included Cloud Run deployment workflow.
+- Wireshark for the required network capture and packet-number evidence.
 
 ## Installation
 
@@ -265,6 +268,51 @@ warnings for all synthetic sources. It has no parameters.
 | Network endpoint | None in Part 1; newline-delimited messages use stdin/stdout |
 | Encoding | UTF-8 JSON, one JSON-RPC object per line |
 
+The same tools and business rules are also exposed by the remote entry point:
+
+| Property | Value |
+|---|---|
+| Transport | HTTPS request/response (manual Streamable HTTP subset) |
+| Container entry point | `node dist/src/mcp/supply-server-http-entry.js` |
+| Health endpoint | `GET /healthz` |
+| MCP endpoint | `POST /mcp` |
+| Authentication | `Authorization: Bearer <MCP_API_KEY>` |
+| Session header | `Mcp-Session-Id` returned by `initialize` and reused by the client |
+| Version header | `Mcp-Protocol-Version: 2025-11-25` after initialization |
+| Request/response encoding | UTF-8 `application/json` JSON-RPC 2.0 |
+
+## Deploy and use the remote server
+
+Authenticate the Google Cloud CLI, select a billing-enabled project, and set a
+random API key without writing it to the repository:
+
+```powershell
+gcloud auth login
+$env:MCP_API_KEY = '<long-random-secret>'
+.\scripts\deploy-cloud-run.ps1 -ProjectId '<project-id>' -Region 'us-central1'
+```
+
+The script prints the two values to copy into `.env`:
+
+```text
+SUPPLY_REMOTE_URL=https://<service-url>/mcp
+SUPPLY_REMOTE_API_KEY=<the same value as MCP_API_KEY>
+```
+
+Setting both values automatically enables `supply-remote`; no JSON
+configuration edit is needed. Verify the deployed server without invoking the
+LLM, then start the chatbot:
+
+```bash
+npm run build
+npm run demo:remote
+npm run chatbot
+```
+
+`/servers` must show both `supply` over `stdio` and `supply-remote` over `http`.
+The deployment is intentionally limited to one Cloud Run instance because MCP
+session state is kept in memory for this academic implementation.
+
 The server accepts `initialize`, `notifications/initialized`, `ping`,
 `tools/list`, and `tools/call`. A successful tool call returns both a text
 content block and `structuredContent` containing the same JSON payload. Invalid
@@ -350,7 +398,7 @@ npm run check
 The automated tests cover business calculations, validation, MCP initialization,
 tool discovery, tool execution, protocol errors, context handling, and audit logs.
 
-For the complete Part 1 acceptance sequence, run:
+For the complete local acceptance sequence, run:
 
 ```bash
 npm run check
@@ -360,6 +408,10 @@ npm run demo:scenario
 
 Then run `npm run chatbot`, ask the two linked Alan Turing questions from
 `docs/DEMO.md`, and inspect `/servers`, `/tools`, and `/log`.
+
+After deployment, run `npm run demo:remote` and follow the capture procedure in
+`docs/FINAL-REPORT.md`. The automated suite includes an authenticated HTTP
+end-to-end test of initialization, session reuse, discovery, and tool execution.
 
 ## Repository and academic integrity
 
@@ -379,10 +431,14 @@ Then run `npm run chatbot`, ask the two linked Alan Turing questions from
 - [Official MCP servers](https://github.com/modelcontextprotocol/servers)
 - [Anthropic Messages API](https://docs.anthropic.com/en/api/messages)
 
-## Known Part 1 limitations
+## Known limitations
 
 - Data is synthetic and loaded from local JSON files.
 - Recommendations are read-only and do not create real purchase orders.
-- The custom server is local and uses stdio only.
-- Remote Streamable HTTP, cloud deployment, packet capture, and OSI-layer
-  analysis belong to Part 2.
+- The remote transport implements the request/response subset needed by this
+  client; it does not implement SSE server push or resumability.
+- Remote session state is in memory, so the supplied Cloud Run command limits
+  the service to one instance.
+- A real cloud deployment, its URL, and packet numbers cannot be committed as
+  portable evidence; the student must capture them in the authenticated lab
+  environment using `docs/FINAL-REPORT.md`.

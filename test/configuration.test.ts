@@ -16,3 +16,19 @@ test('enables the custom server and both official reference servers by default',
   assert.match(gitServer?.args.join(' ') ?? '', /mcp-server-git/)
 })
 
+test('enables the remote supply server when its URL and API key are configured', async () => {
+  const previousUrl = process.env.SUPPLY_REMOTE_URL
+  const previousKey = process.env.SUPPLY_REMOTE_API_KEY
+  process.env.SUPPLY_REMOTE_URL = 'https://example.invalid/mcp'
+  process.env.SUPPLY_REMOTE_API_KEY = 'test-key'
+  try {
+    const config = await loadMcpConfiguration()
+    assert.equal(config.servers['supply-remote']?.enabled, true)
+    assert.equal(config.servers['supply-remote']?.transport, 'http')
+  } finally {
+    if (previousUrl === undefined) delete process.env.SUPPLY_REMOTE_URL
+    else process.env.SUPPLY_REMOTE_URL = previousUrl
+    if (previousKey === undefined) delete process.env.SUPPLY_REMOTE_API_KEY
+    else process.env.SUPPLY_REMOTE_API_KEY = previousKey
+  }
+})

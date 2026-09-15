@@ -21,7 +21,7 @@ npm run demo:scenario
 
 Resultados que deben aparecer:
 
-- 55 pruebas aprobadas.
+- 58 pruebas aprobadas.
 - Filesystem y Git conectados.
 - README creado en `demo-workspace`.
 - Archivo agregado, revisado y comprometido mediante MCP.
@@ -320,7 +320,7 @@ Mostrar únicamente:
 
 - [ ] API configurada sin mostrar `.env`.
 - [ ] Tres servidores conectados.
-- [ ] 55 pruebas aprobadas.
+- [ ] 58 pruebas aprobadas.
 - [ ] `demo:scenario` ejecutado una vez.
 - [ ] Terminal con letra grande.
 - [ ] Sin ventanas ni información laboral visible.

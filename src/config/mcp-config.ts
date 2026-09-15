@@ -17,17 +17,20 @@ function validateHttpServer(name: string, value: Record<string, unknown>): HttpS
     throw new Error(`MCP server ${name}.apiKeyEnv must be a string.`)
   }
 
-  const url = process.env[value.urlEnv]
-  if (value.enabled && (!url || url.trim() === '')) {
+  const url = process.env[value.urlEnv]?.trim()
+  // A configured URL opts the remote server in. This keeps the repository safe
+  // by default while making the documented SUPPLY_REMOTE_URL switch effective.
+  const enabled = value.enabled || Boolean(url)
+  if (enabled && !url) {
     throw new Error(`MCP server ${name} is enabled but environment variable ${value.urlEnv} is not set.`)
   }
-  const apiKey = value.apiKeyEnv ? process.env[value.apiKeyEnv] : undefined
-  if (value.enabled && value.apiKeyEnv && (!apiKey || apiKey.trim() === '')) {
+  const apiKey = value.apiKeyEnv ? process.env[value.apiKeyEnv]?.trim() : undefined
+  if (enabled && value.apiKeyEnv && !apiKey) {
     throw new Error(`MCP server ${name} is enabled but environment variable ${value.apiKeyEnv} is not set.`)
   }
 
   return {
-    enabled: value.enabled,
+    enabled,
     transport: 'http',
     url: url ?? '',
     ...(apiKey === undefined ? {} : { apiKey }),
@@ -82,4 +85,3 @@ export async function loadMcpConfiguration(
     ),
   }
 }
-

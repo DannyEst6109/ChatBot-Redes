@@ -1,8 +1,8 @@
 import { randomUUID } from 'node:crypto'
-import { createServer, type IncomingMessage, type ServerResponse } from 'node:http'
+import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http'
 
 import { isRecord } from '../shared/json.js'
-import { failure } from './protocol.js'
+import { failure, MCP_PROTOCOL_VERSION } from './protocol.js'
 import type { ManualMcpServer } from './json-rpc-server.js'
 
 export interface HttpServerOptions {
@@ -15,6 +15,7 @@ export interface HttpServerOptions {
 
 const DEFAULT_PATH = '/mcp'
 const SESSION_HEADER = 'mcp-session-id'
+const PROTOCOL_HEADER = 'mcp-protocol-version'
 
 /**
  * Transporte HTTP manual para MCP (subconjunto sin streaming de "Streamable
@@ -27,7 +28,7 @@ const SESSION_HEADER = 'mcp-session-id'
 export async function runHttpServer(
   createSession: () => ManualMcpServer,
   options: HttpServerOptions,
-): Promise<void> {
+): Promise<Server> {
   const path = options.path ?? DEFAULT_PATH
   const sessions = new Map<string, ManualMcpServer>()
 
@@ -55,6 +56,13 @@ export async function runHttpServer(
     if (options.apiKey !== undefined && req.headers.authorization !== `Bearer ${options.apiKey}`) {
       res.writeHead(401, { 'content-type': 'application/json' })
       res.end(JSON.stringify(failure(null, -32000, 'Unauthorized')))
+      return
+    }
+
+    const contentType = req.headers['content-type']?.split(';', 1)[0]?.trim().toLowerCase()
+    if (contentType !== 'application/json') {
+      res.writeHead(415, { 'content-type': 'application/json' })
+      res.end(JSON.stringify(failure(null, -32600, 'Content-Type must be application/json')))
       return
     }
 
@@ -86,6 +94,11 @@ export async function runHttpServer(
         res.end(JSON.stringify(failure(null, -32001, 'Unknown or expired MCP session')))
         return
       }
+      if (req.headers[PROTOCOL_HEADER] !== MCP_PROTOCOL_VERSION) {
+        res.writeHead(400, { 'content-type': 'application/json' })
+        res.end(JSON.stringify(failure(null, -32600, `Mcp-Protocol-Version must be ${MCP_PROTOCOL_VERSION}`)))
+        return
+      }
     }
 
     const response = await session.handle(payload)
@@ -105,6 +118,7 @@ export async function runHttpServer(
     server.listen(options.port, () => resolveListen())
   })
   console.error(`[supply-mcp-http] Ready on port ${options.port}. Endpoint: POST ${path}`)
+  return server
 }
 
 function readBody(req: IncomingMessage): Promise<string> {
