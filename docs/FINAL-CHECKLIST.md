@@ -13,38 +13,32 @@ extra.
 | 2 | Session context | `ChatSession` retains user, assistant, tool-use, and tool-result turns | Implemented and tested |
 | 3 | Visible and persistent MCP log | Terminal protocol formatter plus JSONL audit logger | Implemented and tested |
 
-## Servidores MCP, primera parte — 30% (15% each)
+## Servidores MCP locales — 30% (15% each)
 
 | # | Requirement | Evidence | Status |
 |---:|---|---|---|
 | 4 | Official local Filesystem and Git MCP servers | Configuration plus the disposable repository scenario in `npm run demo:scenario` | Implemented and demonstrable |
 | 5 | Custom industrial local MCP server | Supply planning server over stdio, five tools, use case agreed with the lecturer | Implemented and tested |
 
-## Servidores MCP, segunda parte — 50% (25% each)
+## Servidor MCP remoto y análisis de red — 50% (25% each)
 
 | # | Requirement | Evidence | Status |
 |---:|---|---|---|
 | 6 | Same custom server running remotely | Live authenticated Render service; HTTP server, client transport, Dockerfile, Blueprint, Cloud Run alternative | Complete and verified |
-| 7 | Wireshark analysis classifying JSON-RPC messages | See below | **Re-capture required** |
+| 7 | Wireshark analysis classifying JSON-RPC messages | Decrypted canonical capture, exact frame table, and `remote-mcp-analysis.png` | Complete and verified |
 
-Requirement 7 asks which captured messages are synchronization, which are
-requests, and which are responses. The capture currently in `evidence/` is real
-and correctly labelled, but it is HTTPS, so the JSON-RPC bodies are encrypted
-and the classification table in `FINAL-REPORT.md` is conceptual rather than
-read off the packets.
-
-`npm run capture:remote` closes this. It exercises the same remote Render
-service and writes the TLS session secrets to `tmp/tls-keys.log`; loading that
-file in Wireshark decrypts the stream and shows every JSON-RPC envelope by frame
-number. The capture must be re-recorded this way, and the observed frame numbers
-written back into section 4 of `FINAL-REPORT.md`.
+Requirement 7 is closed with the capture recorded on 2026-09-21. Wireshark
+decrypts stream 16 using the TLS secrets from the same client execution. The
+observed frames are 880/911 for `initialize`, 914/943 for
+`notifications/initialized`, 945/986 for `tools/list`, and 988/1020 for
+`tools/call`. The evidence figure omits the Authorization header.
 
 ## Reporte — 10%
 
 | # | Requirement | Evidence | Status |
 |---:|---|---|---|
 | 8 | Server specification, parameters, endpoints | README tool contracts plus the local and remote interface tables | Complete |
-| 9 | Link, network, transport, and application layer analysis | `FINAL-REPORT.md` section 5, with observed addresses and packet numbers | Complete for layers 2-4; application layer pending the decrypted re-capture |
+| 9 | Link, network, transport, and application layer analysis | `FINAL-REPORT.md` section 5, with observed addresses and packet numbers | Complete and verified |
 | 10 | Conclusions and project commentary | `FINAL-REPORT.md` section 7 | Complete |
 
 ## Documentación y control de versiones — 15%
@@ -53,13 +47,12 @@ written back into section 4 of `FINAL-REPORT.md`.
 |---|---|---|
 | README in English covering features, install and use | `README.md` | Complete |
 | Code comments and documentation | Protocol, transport, and service layers are commented | Complete |
-| Repository private, course staff invited | Must be confirmed in the GitHub settings before delivery | **To confirm** |
-| Gradual commit history | 21 commits, but clustered: 11 on 2026-08-16, four spread across late August, seven from 2026-09-13 onwards | **Partially met** |
+| Repository private, course staff invited | GitHub administration | **Excluded from this evaluation by request** |
+| Gradual commit history | Git history | **Excluded from this evaluation by request** |
 
-The commit distribution is the weakest point of the submission and cannot be
-corrected retroactively without falsifying history. Remaining work should be
-committed as several coherent commits rather than one, and the gaps should be
-acknowledged honestly in the presentation.
+Repository privacy, invitations, pushes, and commit-history distribution are
+intentionally outside this final project evaluation. No technical or
+documentary requirement remains open in the evaluated scope.
 
 ## Extra — 15%
 

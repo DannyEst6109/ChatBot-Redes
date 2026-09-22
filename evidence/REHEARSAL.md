@@ -1,11 +1,11 @@
 # Final demonstration rehearsal
 
-Rehearsal completed on 2026-09-14 after the Render deployment and packet
+Rehearsal updated on 2026-09-21 after the Render deployment and decrypted packet
 capture were finalized.
 
 ## Verified results
 
-- `npm run check`: 58 of 58 tests passed.
+- `npm run check`: 64 of 64 tests passed.
 - `npm run demo:remote`: authenticated initialization, five tools discovered,
   and `get_supply_data_status` completed successfully over HTTPS.
 - `npm run demo:scenario`: the official Filesystem and Git MCP servers created,
@@ -16,7 +16,8 @@ capture were finalized.
 - Claude invoked `supply-remote__get_supply_data_status`; the remote tool call
   completed successfully and reported the synthetic, isolated data sources and
   both quality warnings.
-- Render commit `5b4d23d` was observed in the `Live` state before this rehearsal.
+- Wireshark decrypted stream 16 and exposed the expected JSON-RPC envelopes at
+  frames 880-1020 without publishing the Authorization header.
 
 No credential values are recorded in this file. The local `.env` is ignored by
 Git and contains the configuration required for the live demonstration.

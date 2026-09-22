@@ -96,15 +96,22 @@ Render.
 - Verificacion remota: `initialize` HTTP 200, sesion MCP creada,
   `notifications/initialized` HTTP 202, `tools/list` HTTP 200 con cinco
   herramientas y `tools/call(get_supply_data_status)` HTTP 200 sin error.
-- IP local: `192.168.0.18` (interfaz Wi-Fi)
-- IP remota observada: `216.24.57.7`, puerto TCP `443`
-- Tramas DNS: consulta y respuesta `43-44`
-- Tramas TCP SYN/SYN-ACK/ACK: `45-47`
-- Tramas TLS ClientHello/ServerHello: `49` y `51`
-- Tramas de datos cifrados asociadas a la demostracion: `73-101`
-- Cierre TCP completo de una conexion HTTPS: `22`, `24` y `25`
-- Archivo: `evidence/remote-mcp.pcapng` (102 paquetes)
+- IP local: `10.100.4.45` (interfaz Wi-Fi)
+- IP remota observada: `216.24.57.16`, puerto TCP `443`
+- Tramas DNS: consulta `627` y respuesta `652`
+- Tramas TCP SYN/SYN-ACK: `729` y `747`; el ACK siguiente completa el saludo
+- Tramas TLS ClientHello/ServerHello: `755` y `769`
+- Sincronizacion `initialize`: solicitud `880`, respuesta `911`
+- Sincronizacion `notifications/initialized`: notificacion `914`, HTTP 202 `943`
+- Solicitud `tools/list`: trama `945`, respuesta `986`
+- Solicitud `tools/call(get_supply_data_status)`: trama `988`, respuesta `1020`
+- Cierre TCP de la conexion HTTPS: `1025` y `1042`
+- Archivo: `evidence/remote-mcp.pcapng` (9,474 paquetes; flujo MCP `tcp.stream == 16`)
 - Figura: `evidence/remote-mcp-analysis.png`
+
+La clasificacion anterior fue leida de los cuerpos JSON-RPC descifrados por
+Wireshark/TShark con las claves generadas durante esa misma ejecucion. La
+cabecera Authorization no se reproduce en el informe ni en la figura.
 
 ## 5. Capas de red
 
@@ -135,8 +142,11 @@ efimero. TLS se ejecuta sobre TCP y protege confidencialidad e integridad.
 
 HTTP transporta cada mensaje MCP en un `POST /mcp`. Dentro del cuerpo se usa
 JSON-RPC 2.0. HTTPS cifra tanto cabeceras sensibles, incluido Bearer, como el
-contenido JSON-RPC. El log de auditoria conserva solicitudes, notificaciones y
-respuestas completas con marca de tiempo y nombre del servidor.
+contenido JSON-RPC. Para esta practica, las claves efimeras de la sesion
+permitieron descifrar el flujo localmente y comprobar los metodos e
+identificadores sin publicar la credencial. El log de auditoria conserva
+solicitudes, notificaciones y respuestas completas con marca de tiempo y nombre
+del servidor.
 
 ## 6. Dificultades y soluciones
 

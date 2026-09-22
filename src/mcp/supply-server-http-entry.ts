@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { resolve } from 'node:path'
 
+import { loadEnvironmentFile } from '../config/environment.js'
 import { runHttpServer } from './http-server.js'
 import { ManualMcpServer } from './json-rpc-server.js'
 import { createSupplyToolRegistry } from './supply-tools.js'
@@ -9,6 +10,8 @@ import { SupplyService } from '../supply/service.js'
 import { WebAppController } from '../web/app-controller.js'
 import { createWebAppHandler } from '../web/http-web-app.js'
 import { McpWebBridge } from '../web/mcp-web-bridge.js'
+
+await loadEnvironmentFile()
 
 const dataDirectory = process.env.SUPPLY_DATA_DIR
   ? resolve(process.env.SUPPLY_DATA_DIR)

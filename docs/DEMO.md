@@ -22,7 +22,7 @@ npm run demo:scenario
 
 Resultados que deben aparecer:
 
-- 58 pruebas aprobadas.
+- 64 pruebas aprobadas.
 - Servidor remoto de Render accesible y autenticado.
 - Filesystem y Git conectados.
 - README creado en `demo-workspace`.
@@ -246,22 +246,25 @@ Decir:
 Abrir `evidence/remote-mcp.pcapng` y aplicar:
 
 ```text
-dns.qry.name contains "supply-control-mcp.onrender.com" || ip.addr == 216.24.57.7
+dns.qry.name contains "supply-control-mcp.onrender.com" || tcp.stream == 16
 ```
 
 Señalar:
 
-- DNS en las tramas 43-44.
-- Saludo TCP en las tramas 45-47.
-- ClientHello y ServerHello en las tramas 49 y 51.
-- Datos MCP cifrados en las tramas 73-101.
-- Cierre TCP en las tramas 22, 24 y 25.
+- DNS en las tramas 627 y 652.
+- SYN y SYN-ACK en las tramas 729 y 747.
+- ClientHello y ServerHello en las tramas 755 y 769.
+- `initialize` y su respuesta en las tramas 880 y 911.
+- `notifications/initialized` y HTTP 202 en las tramas 914 y 943.
+- `tools/list` y su respuesta en las tramas 945 y 986.
+- `tools/call` y su respuesta en las tramas 988 y 1020.
+- Cierre TCP en las tramas 1025 y 1042.
 
 Mostrar también `evidence/remote-mcp-analysis.png` y decir:
 
-> Wireshark demuestra DNS, TCP y TLS. HTTPS protege el Bearer token y los
-> cuerpos JSON-RPC, por lo que la captura los identifica honestamente como
-> datos de aplicación cifrados y se correlaciona con el log MCP.
+> Wireshark demuestra DNS, TCP y TLS. Con las claves de esta misma sesión,
+> también descifra HTTP y permite observar los cuerpos JSON-RPC reales. La
+> cabecera Bearer se omite de la figura y el archivo de claves no se publica.
 
 ## 10. Finalizar el chatbot
 
@@ -353,7 +356,7 @@ Mostrar únicamente:
 
 - [ ] API configurada sin mostrar `.env`.
 - [ ] Cuatro servidores conectados y 36 herramientas descubiertas.
-- [ ] 58 pruebas aprobadas.
+- [ ] 64 pruebas aprobadas.
 - [ ] `demo:remote` ejecutado correctamente.
 - [ ] `demo:scenario` ejecutado una vez.
 - [ ] Captura `evidence/remote-mcp.pcapng` abierta en Wireshark.

@@ -30,7 +30,7 @@ does not use an MCP SDK, FastMCP, or an Anthropic SDK.
 - Node.js 22 or newer (Node.js 24 LTS is recommended).
 - npm 10 or newer.
 - An Anthropic API key for the live chatbot.
-- `uvx` for the official Git MCP server and the complete Part 1 scenario.
+- `uvx` for the official Git MCP server and the complete official-server scenario.
 - Google Cloud CLI for the included Cloud Run deployment workflow.
 - Wireshark for the required network capture and packet-number evidence.
 
@@ -67,9 +67,12 @@ npm run mcp:supply:http
 
 Then open `http://127.0.0.1:8080/`. The web console uses only the synthetic
 repository data and invokes the manual MCP server through a server-side bridge.
-`MCP_API_KEY` protects `/mcp`; it is never included in browser JavaScript or API
-responses. The guided web conversation is deterministic and does not incur LLM
-costs. The terminal chatbot remains the live Anthropic integration.
+Set `MCP_API_KEY` in `.env` to protect `/mcp`; the HTTP entry point loads it at
+startup, and it is never included in browser JavaScript or API responses. If the
+variable is empty, the server prints a warning and accepts unauthenticated MCP
+requests for local development. The guided web conversation is deterministic
+and does not incur LLM costs. The terminal chatbot remains the live Anthropic
+integration.
 
 ### Reading the protocol evidence
 
@@ -305,7 +308,7 @@ warnings for all synthetic sources. It has no parameters.
 | MCP revision | `2025-11-25` |
 | Transport | Local `stdio` |
 | Executable entry point | `node dist/src/mcp/supply-server-entry.js` |
-| Network endpoint | None in Part 1; newline-delimited messages use stdin/stdout |
+| Network endpoint | None for the local stdio transport; newline-delimited messages use stdin/stdout |
 | Encoding | UTF-8 JSON, one JSON-RPC object per line |
 
 The same tools and business rules are also exposed by the remote entry point:
@@ -507,7 +510,9 @@ Wireshark, set Preferences > Protocols > TLS > "(Pre)-Master-Secret log
 filename" to that file. Wireshark then decrypts the stream and shows each
 JSON-RPC envelope in the packet detail, so `initialize`,
 `notifications/initialized`, `tools/list`, and `tools/call` can be classified by
-frame number rather than inferred.
+frame number rather than inferred. The canonical capture records `initialize`
+at frame 880, `notifications/initialized` at 914, `tools/list` at 945, and
+`tools/call` at 988; their responses appear at 911, 943, 986, and 1020.
 
 The decrypted traffic contains the `Authorization: Bearer <MCP_API_KEY>` header.
 `tmp/` is ignored by Git, but do not publish the key log or a decrypted capture

@@ -7,12 +7,5 @@ demo-workspace/
 tmp/
 coverage/
 output/
-.playwright-cli/
-.impeccable/**/*.png
-.impeccable/questions/
 *.log
 .DS_Store
-
-# Salidas de herramientas de análisis y de diseño; no forman parte de la entrega.
-graphify-out/
-.impeccable/
